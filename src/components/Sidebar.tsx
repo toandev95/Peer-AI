@@ -208,11 +208,6 @@ export const Sidebar = () => {
             <div className="ml-1.5">{t('sidebar.newChat')}</div>
           </Button>
           <Button variant="outline" size="icon" asChild>
-            <Link href="/settings">
-              <RiSettings3Line size={18} />
-            </Link>
-          </Button>
-          <Button variant="outline" size="icon" asChild>
             <a
               href="https://github.com/toandev95/Peer-AI"
               target="_blank"
@@ -220,6 +215,16 @@ export const Sidebar = () => {
             >
               <RiGithubLine size={18} />
             </a>
+          </Button>
+          {/* <Button variant="outline" size="icon" asChild>
+            <Link href="/search">
+              <RiSearchLine size={18} />
+            </Link>
+          </Button> */}
+          <Button variant="outline" size="icon" asChild>
+            <Link href="/settings">
+              <RiSettings3Line size={18} />
+            </Link>
           </Button>
         </div>
       </div>
