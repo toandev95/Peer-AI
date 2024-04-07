@@ -53,7 +53,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <Toaster />
           </Layout>
         </Providers>
-        <Analytics />;
+        <Analytics />
       </body>
     </html>
   );
