@@ -177,25 +177,8 @@ export const useChatStore = create<ChatState & ChatAction>()(
     }),
     {
       name: StoreKey.Chat,
-      version: 1.1,
+      version: 1.0,
       storage: createJSONStorage(() => storage),
-      migrate(persistedState, version) {
-        const state = persistedState as ChatState;
-
-        if (version < 1.1) {
-          state.chats = map(state.chats, (chat) => ({
-            ...chat,
-            settings: {
-              ...chat.settings,
-              summarizedIds: !isNil(chat.contextSummary)
-                ? map(chat.messages, 'id')
-                : [],
-            },
-          }));
-        }
-
-        return state;
-      },
     },
   ),
 );

@@ -1,6 +1,7 @@
 import 'katex/dist/katex.min.css';
 import '@/styles/globals.css';
 
+import { Analytics } from '@vercel/analytics/react';
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 
@@ -52,6 +53,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <Toaster />
           </Layout>
         </Providers>
+        <Analytics />;
       </body>
     </html>
   );
