@@ -1,0 +1,127 @@
+{
+  "confirm": {
+    "title": "Xác Nhận",
+    "actions": {
+      "ok": "Đồng Ý",
+      "cancel": "Hủy"
+    }
+  },
+  "sidebar": {
+    "slogan": "Cá nhân hóa AI cho riêng bạn.",
+    "totalMessages": "{{count}} tin nhắn",
+    "newChat": "Chat Mới",
+    "confirm": {
+      "removeChat": "Bạn có chắc chắn muốn xoá cuộc trò chuyện này?"
+    }
+  },
+  "chatStart": {
+    "title": "Chọn tính cách",
+    "subtitle": "Trò chuyện thú vị với các tính cách khác nhau.",
+    "findMore": "Tìm Thêm",
+    "justStart": "Bắt Đầu",
+    "newChat": "Chat Mới"
+  },
+  "masks": {
+    "title": "Tính Cách",
+    "subtitle": "Tất cả tính cách có sẵn",
+    "totalPrompts": "{{count}} lời nhắc",
+    "chat": "Trò Chuyện",
+    "newChat": "Chat Mới"
+  },
+  "settings": {
+    "title": "Cài Đặt",
+    "subtitle": "Tất cả cài đặt theo sở thích của bạn",
+    "theme": {
+      "title": "Giao Diện",
+      "subtitle": "Chọn giao diện cho ứng dụng.",
+      "system": "Hệ thống",
+      "light": "Sáng",
+      "dark": "Tối"
+    },
+    "avatar": {
+      "title": "Hình Đại Diện"
+    },
+    "language": {
+      "title": "Ngôn Ngữ",
+      "subtitle": "Ngôn ngữ sử dụng cho giao diện."
+    },
+    "sendKey": {
+      "title": "Phím Gửi",
+      "subtitle1": "Nhấn Enter để gửi, giữ Shift + Enter để chuyển sang dòng tiếp theo.",
+      "subtitle2": "Nhấn Ctrl (hoặc Command) + Enter để gửi."
+    },
+    "sendPreviewBubble": {
+      "title": "Xem Trước Tin Nhắn",
+      "subtitle": "Cho phép xem trước tin nhắn sẽ được gửi khi soạn."
+    },
+    "autoGenerateTitle": {
+      "title": "Tự Động Tạo Tiêu Đề",
+      "subtitle": "Tự động tạo tiêu đề cho cuộc trò chuyện dựa vào ngữ cảnh hiện tại."
+    },
+    "accessCode": {
+      "title": "Mã Truy Cập",
+      "subtitle": "Mã truy cập được ủy quyền để truy cập dịch vụ."
+    },
+    "model": {
+      "title": "Mô Hình",
+      "subtitle": "Mô hình mặc định cho các cuộc trò chuyện mới.",
+      "placeholder": "Chọn một mô hình"
+    },
+    "messageCompressionThreshold": {
+      "title": "Ngưỡng Nén Tin Nhắn",
+      "subtitle": "Khi đạt đến ngưỡng này, nội dung cuộc trò chuyện sẽ được tóm tắt để giảm tiêu thụ token."
+    },
+    "reset": {
+      "title": "Cài Lại",
+      "subtitle": "Cài lại tất cả cài đặt về mặc định.",
+      "button": "Cài Lại"
+    },
+    "deleteAll": {
+      "title": "Xóa Tất Cả",
+      "subtitle": "Xóa tất cả cuộc trò chuyện và cài đặt.",
+      "button": "Xóa"
+    },
+    "confirm": {
+      "reset": "Bạn có chắc chắn muốn cài lại tất cả cài đặt về mặc định?",
+      "deleteAll": "Bạn có chắc chắn muốn xóa tất cả cuộc trò chuyện và cài đặt?"
+    }
+  },
+  "chatWindow": {
+    "totalMessages": "{{count}} tin nhắn",
+    "emptyChat": "Tôi có thể giúp gì cho bạn hôm nay?",
+    "editTitle": {
+      "title": "Đổi Tên",
+      "subtitle": "Đặt tên mới cho cuộc trò chuyện này.",
+      "placeholder": "Tên cuộc trò chuyện",
+      "save": "Lưu"
+    },
+    "editMessageContent": {
+      "title": "Sửa Tin Nhắn",
+      "subtitle": "Sửa nội dung tin nhắn này.",
+      "placeholder": "Nội dung tin nhắn",
+      "save": "Lưu"
+    },
+    "toolbar": {
+      "prompts": "Lời Nhắc",
+      "settings": "Cài Đặt",
+      "scrollToBottom": "Cuộn Xuống",
+      "clearHistory": "Xóa Lịch Sử"
+    },
+    "settings": {
+      "title": "Cài Đặt",
+      "subtitle": "Tùy chỉnh cài đặt cho cuộc trò chuyện này.",
+      "model": {
+        "title": "Mô Hình",
+        "placeholder": "Chọn một mô hình"
+      }
+    },
+    "message": {
+      "placeholder": "Nhập tin nhắn...",
+      "stopGenerating": "Dừng lại",
+      "send": "Gửi"
+    },
+    "confirm": {
+      "clearHistory": "Bạn có chắc chắn muốn xóa lịch sử trò chuyện?"
+    }
+  }
+}
