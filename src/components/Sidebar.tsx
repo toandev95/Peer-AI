@@ -49,11 +49,16 @@ const MenuItem = ({
     <div className="group relative">
       <div
         className={cn(
-          'rounded-lg px-4 py-3 border bg-background shadow-sm transition-all cursor-pointer group-hover:bg-accent dark:group-hover:bg-accent',
+          'relative overflow-hidden rounded-lg px-4 py-3 border bg-background shadow-sm transition-all cursor-pointer group-hover:bg-accent/90',
           selected && 'border-primary dark:bg-primary/5',
         )}
         onClickCapture={onItemClick}
       >
+        {!isNil(chat.mask) && (
+          <div className="absolute -left-6 top-6 text-[80px] opacity-20">
+            {chat.mask.emoji}
+          </div>
+        )}
         <div className="mb-1 truncate font-medium">{chat.title}</div>
         <div className="flex justify-between text-xs text-muted-foreground">
           <span>{t('sidebar.totalMessages', { count: totalMessages })}</span>

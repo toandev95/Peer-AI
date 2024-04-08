@@ -17,9 +17,6 @@ import {
 } from 'react-icons/ri';
 import { BeatLoader } from 'react-spinners';
 import TextareaAutosize from 'react-textarea-autosize';
-import remarkBreaks from 'remark-breaks';
-import remarkGfm from 'remark-gfm';
-import remarkMath from 'remark-math';
 import { useTts } from 'tts-react';
 
 import { useCopyToClipboard } from '@/hooks';
@@ -27,9 +24,8 @@ import i18n from '@/i18n';
 import { cn } from '@/lib/helpers';
 import type { IChatMessage } from '@/types';
 
-import { MemoizedReactMarkdown } from './Markdown';
+import { CustomizedReactMarkdown } from './Markdown';
 import { Button } from './UI/Button';
-import { CodeBlock } from './UI/CodeBlock';
 import {
   Dialog,
   DialogContent,
@@ -205,38 +201,9 @@ export const ChatBubble = ({
             <BeatLoader color="#3c83f6" size={6} />
           )}
           {!isEmpty(message.content) && (
-            <MemoizedReactMarkdown
-              className="prose prose-sm select-text break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0 prose-img:my-0"
-              remarkPlugins={[remarkGfm, remarkMath, remarkBreaks]}
-              components={{
-                p: ({ children }) => {
-                  return <p className="mb-2 last:mb-0">{children}</p>;
-                },
-                a: ({ children, ...props }) => {
-                  return (
-                    <a {...props} target="_blank" rel="noopener noreferrer">
-                      {children}
-                    </a>
-                  );
-                },
-                code: ({ className, children, ...props }) => {
-                  const match = /language-(\w+)/.exec(className || '');
-
-                  return !isNil(match) ? (
-                    <CodeBlock
-                      language={match[1]!}
-                      value={String(children).replace(/\n$/, '')}
-                    />
-                  ) : (
-                    <code {...props} className={className}>
-                      {children}
-                    </code>
-                  );
-                },
-              }}
-            >
+            <CustomizedReactMarkdown className="prose prose-sm select-text break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0 prose-img:my-0">
               {message.content}
-            </MemoizedReactMarkdown>
+            </CustomizedReactMarkdown>
           )}
         </div>
       </div>

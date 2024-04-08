@@ -52,5 +52,5 @@ export const useChatScrollAnchor = (deps: DependencyList) => {
     scrollToBottom();
   }, [scrollRef, ...deps]);
 
-  return { scrollRef, isBottom, scrollToBottom };
+  return { scrollRef, isBottom, setIsBottom, scrollToBottom };
 };

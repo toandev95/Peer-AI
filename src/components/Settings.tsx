@@ -410,7 +410,8 @@ export const Settings = () => {
                 <Input
                   type="number"
                   className="w-[120px] text-center"
-                  value={configStore.messageCompressionThreshold || 2000}
+                  value={configStore.messageCompressionThreshold}
+                  max={2048}
                   onChange={(ev) => {
                     updateConfig({
                       messageCompressionThreshold:

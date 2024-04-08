@@ -12,6 +12,8 @@ export type ConfigState = {
   sendPreviewBubble: boolean;
   autoGenerateTitle: boolean;
   accessCode?: string;
+  customApiKeys?: string;
+  customBaseUrl?: string;
   models: IChatSetting['model'][];
   defaultModel?: IChatSetting['model'];
   maxTokens: number;
@@ -36,9 +38,11 @@ const initialState: ConfigState = {
   sendPreviewBubble: true,
   autoGenerateTitle: true,
   accessCode: '123456',
+  customApiKeys: undefined,
+  customBaseUrl: undefined,
   models: [],
   defaultModel: undefined,
-  maxTokens: 2000,
+  maxTokens: 2048,
   temperature: 0.3,
   topP: 1,
   frequencyPenalty: 0,
@@ -46,7 +50,7 @@ const initialState: ConfigState = {
   isMaximized: false,
   sidebarWidth: 320,
   paginationSize: 8,
-  messageCompressionThreshold: 2000,
+  messageCompressionThreshold: 2048,
 };
 
 export const useConfigStore = create<ConfigState & ConfigAction>()(

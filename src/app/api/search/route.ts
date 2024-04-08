@@ -1,7 +1,7 @@
 import { Document } from '@langchain/core/documents';
 import { StringOutputParser } from '@langchain/core/output_parsers';
 import { ChatPromptTemplate } from '@langchain/core/prompts';
-import { ChatOpenAI } from '@langchain/openai';
+import { OpenAI } from '@langchain/openai';
 import { createStuffDocumentsChain } from 'langchain/chains/combine_documents';
 import _, { isEmpty, isNil, map, pick } from 'lodash';
 import type { ServerRuntime } from 'next';
@@ -98,7 +98,7 @@ export async function POST(req: NextRequest): Promise<Response> {
     });
   });
 
-  const llm = new ChatOpenAI({
+  const llm = new OpenAI({
     temperature: 0.7,
     maxTokens: 1024,
     modelName: 'gpt-4',

@@ -1,7 +1,7 @@
 'use client';
 
 import { useMutation } from '@tanstack/react-query';
-import _, { isEmpty, isNil, isNumber, map } from 'lodash';
+import _, { isEmpty, isNil, isNumber, map, sample } from 'lodash';
 import Image from 'next/image';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import type { FormEvent, ReactNode } from 'react';
@@ -83,6 +83,14 @@ const CitePopover = ({
     </Popover>
   );
 };
+
+const placeholder = sample([
+  'What to eat when coming to Vietnam?',
+  'Where to travel in Vietnam?',
+  'Which hotel is good in Vietnam?',
+  'Culinary culture in Vietnam?',
+  'What is pho?',
+]);
 
 const Search = () => {
   const router = useRouter();
@@ -366,7 +374,7 @@ const Search = () => {
         <form className="flex gap-2" onSubmit={handleSubmit}>
           <Input
             type="search"
-            placeholder='Ask "Delicious dishes when coming to Vietnam"'
+            placeholder={`Ask "${placeholder}"`}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             disabled={isPending}

@@ -17,6 +17,7 @@ export type IChatSetting = {
   frequencyPenalty: number;
   presencePenalty: number;
   summarizedIds?: IChatMessage['id'][];
+  isNotebookMode?: boolean;
 };
 
 export type IPrompt = {
