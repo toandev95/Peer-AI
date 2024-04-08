@@ -576,8 +576,8 @@ export const ChatWindow = ({ id }: { id: IChat['id'] }) => {
           />
           {!currentChat.settings.isNotebookMode ? (
             <ToolbarIconButton
-              IconComponent={RiBookletLine}
-              label="Notebook"
+              IconComponent={RiChat3Line}
+              label="Chat"
               onClick={() => {
                 updateChatSettings(currentChat.id, { isNotebookMode: true });
 
@@ -586,8 +586,8 @@ export const ChatWindow = ({ id }: { id: IChat['id'] }) => {
             />
           ) : (
             <ToolbarIconButton
-              IconComponent={RiChat3Line}
-              label="Chat"
+              IconComponent={RiBookletLine}
+              label="Notebook"
               onClick={() => {
                 updateChatSettings(currentChat.id, { isNotebookMode: false });
 
