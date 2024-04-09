@@ -1,6 +1,6 @@
 import { isNil } from 'lodash';
 import type { FC } from 'react';
-import { memo } from 'react';
+import React, { memo } from 'react';
 import type { Options } from 'react-markdown';
 import ReactMarkdown from 'react-markdown';
 import remarkBreaks from 'remark-breaks';
@@ -34,15 +34,12 @@ export const CustomizedReactMarkdown = (props: Readonly<Readonly<Options>>) => {
         code: ({ className, children, ...props }) => {
           const match = /language-(\w+)/.exec(className || '');
 
-          return !isNil(match) ? (
+          return (
             <CodeBlock
-              language={match[1]!}
+              {...props}
+              language={!isNil(match) ? match[1]! : ''}
               value={String(children).replace(/\n$/, '')}
             />
-          ) : (
-            <code {...props} className={className}>
-              {children}
-            </code>
           );
         },
       }}

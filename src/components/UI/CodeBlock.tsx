@@ -31,7 +31,7 @@ export const CodeBlock: FC<{ language: string; value: string }> = memo(
         <SyntaxHighlighter
           language={language}
           style={coldarkDark}
-          PreTag="div"
+          // PreTag="pre"
           customStyle={{ margin: 0, width: '100%' }}
           showInlineLineNumbers
           showLineNumbers
