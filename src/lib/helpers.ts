@@ -58,8 +58,13 @@ export const getModelNameByModelID = (id: string): string => {
     case 'gpt-3.5-turbo':
       return 'GPT-3.5 Turbo';
 
-    default:
+    default: {
+      if (id.includes('/')) {
+        return id.split('/').pop() as string;
+      }
+
       return id.toUpperCase();
+    }
   }
 };
 

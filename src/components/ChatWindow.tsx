@@ -15,6 +15,7 @@ import _, {
   lastIndexOf,
   map,
   omit,
+  startsWith,
   takeWhile,
 } from 'lodash';
 import moment from 'moment';
@@ -39,7 +40,7 @@ import { useEffectOnce, useToggle } from 'react-use';
 
 import { useBreakpoint, useChatScrollAnchor, useEnterSubmit } from '@/hooks';
 import i18n from '@/i18n';
-import { emptyToUndefined, getModelNameByModelID, uuid } from '@/lib/helpers';
+import { getModelNameByModelID, uuid } from '@/lib/helpers';
 import { useChatStore, useConfigStore, usePromptStore } from '@/stores';
 import type { IChat, IChatMessage, IChatSetting, IPrompt } from '@/types';
 
@@ -161,9 +162,14 @@ export const ChatWindow = ({ id }: { id: IChat['id'] }) => {
           language: i18n.language,
           streaming: false,
         }),
-        headers: !isNil(emptyToUndefined(configStore.accessCode))
-          ? { Authorization: `Bearer ${configStore.accessCode}` }
-          : undefined,
+        headers: {
+          ...(!isNil(configStore.customApiKey)
+            ? { 'X-Custom-Api-Key': configStore.customApiKey }
+            : {}),
+          ...(!isNil(configStore.customBaseUrl)
+            ? { 'X-Custom-Base-Url': configStore.customBaseUrl }
+            : {}),
+        },
       });
 
       if (!response.ok) {
@@ -231,7 +237,10 @@ export const ChatWindow = ({ id }: { id: IChat['id'] }) => {
       (message) => !includes(settings.summarizedIds, message.id),
     );
 
-    const tokens = encodeChat(filteredMessages, settings.model);
+    const encodeModel = startsWith(settings.model, 'gpt-')
+      ? settings.model
+      : 'gpt-3.5-turbo';
+    const tokens = encodeChat(filteredMessages, encodeModel);
     if (tokens.length < configStore.messageCompressionThreshold) {
       return;
     }
@@ -305,10 +314,15 @@ export const ChatWindow = ({ id }: { id: IChat['id'] }) => {
       ],
       language: i18n.language,
       streaming: true,
+      headers: {
+        ...(!isNil(configStore.customApiKey)
+          ? { 'X-Custom-Api-Key': configStore.customApiKey }
+          : {}),
+        ...(!isNil(configStore.customBaseUrl)
+          ? { 'X-Custom-Base-Url': configStore.customBaseUrl }
+          : {}),
+      },
     },
-    headers: !isNil(emptyToUndefined(configStore.accessCode))
-      ? { Authorization: `Bearer ${configStore.accessCode}` }
-      : undefined,
     onFinish: () => {
       handleGenerateTitle();
       handleGenerateSummary();
@@ -630,7 +644,7 @@ export const ChatWindow = ({ id }: { id: IChat['id'] }) => {
                         });
                       }}
                     >
-                      <SelectTrigger className="w-[180px] truncate">
+                      <SelectTrigger className="min-w-[180px] truncate">
                         <SelectValue
                           placeholder={t(
                             'chatWindow.settings.model.placeholder',
@@ -772,7 +786,7 @@ export const ChatWindow = ({ id }: { id: IChat['id'] }) => {
             placeholder={t('chatWindow.message.placeholder')}
             className="block w-full resize-none overscroll-contain rounded-lg border bg-background px-3 py-2.5 pr-[140px] outline-none scrollbar scrollbar-thumb-accent-foreground/30 scrollbar-thumb-rounded-full scrollbar-w-[3px] placeholder:text-foreground disabled:cursor-not-allowed disabled:opacity-50"
             spellCheck={false}
-            minRows={4}
+            minRows={3}
             maxRows={6}
             onChange={handleInputChange}
             onKeyDown={onKeyDown}

@@ -58,10 +58,6 @@
       "title": "Tự Động Tạo Tiêu Đề",
       "subtitle": "Tự động tạo tiêu đề cho cuộc trò chuyện dựa vào ngữ cảnh hiện tại."
     },
-    "accessCode": {
-      "title": "Mã Truy Cập",
-      "subtitle": "Mã truy cập được ủy quyền để truy cập dịch vụ."
-    },
     "model": {
       "title": "Mô Hình",
       "subtitle": "Mô hình mặc định cho các cuộc trò chuyện mới.",

@@ -275,15 +275,12 @@ export const Settings = () => {
         <FadeIn>
           <Card>
             <div className="divide-y">
-              <BoxItem
-                title={t('settings.accessCode.title')}
-                subtitle={t('settings.accessCode.subtitle')}
-              >
+              <BoxItem title="Custom API Key">
                 <DebouncedInput
                   type="password"
-                  placeholder="Access Code"
+                  placeholder="API Key"
                   className="text-center"
-                  value={configStore.accessCode || ''}
+                  value={configStore.customApiKey || ''}
                   autoComplete="off"
                   onDebounceChange={(raw) => {
                     if (isNil(raw)) {
@@ -292,7 +289,26 @@ export const Settings = () => {
 
                     const value = raw.toString().trim();
                     updateConfig({
-                      accessCode: !isEmpty(value) ? value : undefined,
+                      customApiKey: !isEmpty(value) ? value : undefined,
+                    });
+                  }}
+                />
+              </BoxItem>
+              <BoxItem title="Custom Base URL">
+                <DebouncedInput
+                  type="url"
+                  placeholder="Base URL"
+                  className="text-center"
+                  value={configStore.customBaseUrl || ''}
+                  autoComplete="off"
+                  onDebounceChange={(raw) => {
+                    if (isNil(raw)) {
+                      return;
+                    }
+
+                    const value = raw.toString().trim();
+                    updateConfig({
+                      customBaseUrl: !isEmpty(value) ? value : undefined,
                     });
                   }}
                 />

@@ -48,18 +48,26 @@ export const Layout = ({ children }: { children: ReactNode }) => {
     },
   });
 
-  const { data: models } = useQuery({
+  const { data: models, refetch } = useQuery({
     queryKey: ['models'],
     queryFn: async () => {
       const response = await fetch('/api/models', {
         headers: {
-          Authorization: `Bearer ${configStore.accessCode}`,
+          ...(!isNil(configStore.customApiKey)
+            ? { 'X-Custom-Api-Key': configStore.customApiKey }
+            : {}),
+          ...(!isNil(configStore.customBaseUrl)
+            ? { 'X-Custom-Base-Url': configStore.customBaseUrl }
+            : {}),
         },
       });
       return response.json() as Promise<ModelsPage>;
     },
-    enabled: !isNil(configStore.accessCode),
   });
+
+  useEffect(() => {
+    refetch();
+  }, [configStore.customApiKey, configStore.customBaseUrl, refetch]);
 
   useEffect(() => {
     if (!isNil(models) && isArray(models.data)) {
@@ -70,7 +78,7 @@ export const Layout = ({ children }: { children: ReactNode }) => {
         ) as IChatSetting['model'][],
       });
     }
-  }, [configStore.accessCode, models, updateConfig]);
+  }, [models, updateConfig]);
 
   useEffect(() => {
     updateConfig({

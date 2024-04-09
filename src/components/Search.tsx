@@ -20,8 +20,7 @@ import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 
 import i18n from '@/i18n';
-import { cn, emptyToUndefined } from '@/lib/helpers';
-import { useConfigStore } from '@/stores';
+import { cn } from '@/lib/helpers';
 
 import { AppBar, AppBarIconButton } from './AppBar';
 import { MemoizedReactMarkdown } from './Markdown';
@@ -97,8 +96,6 @@ const Search = () => {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const configStore = useConfigStore();
-
   const [isFirstSearch, setIsFirstSearch] = useState<boolean>(true);
   const [query, setQuery] = useState<string>(searchParams.get('q') || '');
 
@@ -115,9 +112,6 @@ const Search = () => {
           query,
           language: i18n.language,
         }),
-        headers: !isNil(emptyToUndefined(configStore.accessCode))
-          ? { Authorization: `Bearer ${configStore.accessCode}` }
-          : undefined,
       });
 
       if (!response.ok) {

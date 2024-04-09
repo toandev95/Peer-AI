@@ -58,10 +58,6 @@
       "title": "Auto Generate Title",
       "subtitle": "Automatically generate a title for the conversation based on the current context."
     },
-    "accessCode": {
-      "title": "Access Code",
-      "subtitle": "Access code authorized to access the service."
-    },
     "model": {
       "title": "Model",
       "subtitle": "Default model for new chats.",

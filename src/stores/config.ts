@@ -11,8 +11,7 @@ export type ConfigState = {
   sendKey: SendKeys;
   sendPreviewBubble: boolean;
   autoGenerateTitle: boolean;
-  accessCode?: string;
-  customApiKeys?: string;
+  customApiKey?: string;
   customBaseUrl?: string;
   models: IChatSetting['model'][];
   defaultModel?: IChatSetting['model'];
@@ -37,8 +36,7 @@ const initialState: ConfigState = {
   sendKey: SendKeys.Enter,
   sendPreviewBubble: true,
   autoGenerateTitle: true,
-  accessCode: '123456',
-  customApiKeys: undefined,
+  customApiKey: undefined,
   customBaseUrl: undefined,
   models: [],
   defaultModel: undefined,
