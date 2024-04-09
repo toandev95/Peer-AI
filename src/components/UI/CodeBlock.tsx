@@ -13,7 +13,7 @@ export const CodeBlock: FC<{ language: string; value: string }> = memo(
     const { isCopied, copyToClipboard } = useCopyToClipboard();
 
     return (
-      <div className="relative text-sm">
+      <div className="relative -mx-3 -my-2 text-sm">
         <div className="flex select-none items-center justify-between px-3 py-1.5">
           <span className="text-xs lowercase">{language}</span>
           <button
@@ -31,7 +31,7 @@ export const CodeBlock: FC<{ language: string; value: string }> = memo(
         <SyntaxHighlighter
           language={language}
           style={coldarkDark}
-          // PreTag="pre"
+          PreTag="div"
           customStyle={{ margin: 0, width: '100%' }}
           showInlineLineNumbers
           showLineNumbers

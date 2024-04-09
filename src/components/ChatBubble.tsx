@@ -201,7 +201,7 @@ export const ChatBubble = ({
             <BeatLoader color="#3c83f6" size={6} />
           )}
           {!isEmpty(message.content) && (
-            <CustomizedReactMarkdown className="prose prose-sm select-text break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0 prose-img:my-0">
+            <CustomizedReactMarkdown className="prose prose-sm select-text break-words dark:prose-invert prose-p:leading-relaxed prose-img:my-0">
               {message.content}
             </CustomizedReactMarkdown>
           )}

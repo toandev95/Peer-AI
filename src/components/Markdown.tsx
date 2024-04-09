@@ -22,7 +22,11 @@ export const CustomizedReactMarkdown = (props: Readonly<Readonly<Options>>) => {
       remarkPlugins={[remarkGfm, remarkMath, remarkBreaks]}
       components={{
         p: ({ children }) => {
-          return <p className="mb-2 last:mb-0">{children}</p>;
+          return (
+            <p className="mb-2 last:mb-0" dir="auto">
+              {children}
+            </p>
+          );
         },
         a: ({ children, ...props }) => {
           return (
@@ -34,12 +38,15 @@ export const CustomizedReactMarkdown = (props: Readonly<Readonly<Options>>) => {
         code: ({ className, children, ...props }) => {
           const match = /language-(\w+)/.exec(className || '');
 
-          return (
+          return !isNil(match) ? (
             <CodeBlock
-              {...props}
-              language={!isNil(match) ? match[1]! : ''}
+              language={match[1]! || ''}
               value={String(children).replace(/\n$/, '')}
             />
+          ) : (
+            <code {...props} className={className}>
+              {children}
+            </code>
           );
         },
       }}

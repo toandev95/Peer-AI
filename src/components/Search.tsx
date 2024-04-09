@@ -250,7 +250,7 @@ const Search = () => {
                 <span className="underline">Answer:</span>
               </div>
               <MemoizedReactMarkdown
-                className="prose prose-sm max-w-full select-text break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0 prose-img:my-0"
+                className="prose prose-sm max-w-full select-text break-words dark:prose-invert prose-p:leading-relaxed prose-img:my-0"
                 remarkPlugins={[remarkGfm, remarkMath, remarkBreaks]}
                 components={{
                   p: (props) => {

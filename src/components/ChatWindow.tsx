@@ -561,7 +561,7 @@ export const ChatWindow = ({ id }: { id: IChat['id'] }) => {
       {currentChat.settings.isNotebookMode && (
         <div className="flex-1 bg-background p-4">
           {!isNil(lastAssistantMessage) && (
-            <CustomizedReactMarkdown className="prose prose-sm max-w-full select-text break-words dark:prose-invert prose-p:leading-relaxed prose-pre:p-0 prose-img:my-0">
+            <CustomizedReactMarkdown className="prose prose-sm max-w-full select-text break-words dark:prose-invert prose-p:leading-relaxed prose-img:my-0">
               {lastAssistantMessage.content}
             </CustomizedReactMarkdown>
           )}
