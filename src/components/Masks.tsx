@@ -1,19 +1,218 @@
 'use client';
 
-import { isNil, map } from 'lodash';
+import { nanoid } from 'ai';
+import _, { capitalize, filter, isEmpty, isNil, map } from 'lodash';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { RiChat3Line, RiCloseLine } from 'react-icons/ri';
+import {
+  RiAddCircleLine,
+  RiChat3Line,
+  RiCloseCircleLine,
+  RiCloseLine,
+  RiDeleteBin4Line,
+} from 'react-icons/ri';
+import TextareaAutosize from 'react-textarea-autosize';
 
+import { uuid } from '@/lib/helpers';
 import { useChatStore, useMaskStore } from '@/stores';
-import type { IMask } from '@/types';
+import type { IChatMessage, IMask } from '@/types';
 
 import { AppBar, AppBarIconButton } from './AppBar';
+import { EmojiPickerButton } from './EmojiPickerButton';
 import { Button } from './UI/Button';
 import { Card } from './UI/Card';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from './UI/Dialog';
 import { FadeIn } from './UI/FadeIn';
+import { Input } from './UI/Input';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './UI/Select';
 
-const MaskItem = ({ mask, onClick }: { mask: IMask; onClick: () => void }) => {
+type AddNewMaskFormData = Pick<IMask, 'title' | 'emoji'> & {
+  messages: Pick<IChatMessage, 'role' | 'content' | 'createdAt'>[];
+};
+
+const AddNewMaskButton = () => {
+  const maskStore = useMaskStore();
+
+  const [open, setOpen] = useState<boolean>(false);
+
+  const [formData, setFormData] = useState<AddNewMaskFormData>({
+    title: '',
+    emoji: '👌',
+    messages: [],
+  });
+
+  const handleSubmit = () => {
+    if (
+      isEmpty(formData.title) ||
+      isEmpty(formData.emoji) ||
+      isEmpty(formData.messages)
+    ) {
+      return;
+    }
+
+    maskStore.addMask({
+      ...formData,
+      id: uuid(),
+      messages: map(formData.messages, (message) => ({
+        ...message,
+        id: nanoid(),
+      })),
+      createdAt: new Date().toISOString(),
+      builtIn: false,
+    });
+
+    setOpen(false);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <div>
+          <AppBarIconButton key={1} IconComponent={RiAddCircleLine} />
+        </div>
+      </DialogTrigger>
+      <DialogContent className="max-w-[600px]">
+        <DialogHeader>
+          <DialogTitle>Add New Mask</DialogTitle>
+          <DialogDescription>
+            Create a new mask to use in your conversations.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="flex flex-col gap-4">
+          <div className="flex w-full gap-3">
+            <EmojiPickerButton
+              value={formData.emoji}
+              onChange={(emoji) => {
+                setFormData({ ...formData, emoji });
+              }}
+            />
+            <Input
+              value={formData.title}
+              onChange={(e) => {
+                setFormData({ ...formData, title: e.target.value });
+              }}
+              placeholder="Mask name"
+            />
+          </div>
+          <div className="flex w-full flex-col gap-2">
+            <div className="font-semibold">Messages:</div>
+            {map(formData.messages, (message, index) => (
+              <div key={index} className="flex gap-3">
+                <Select
+                  value={message.role}
+                  onValueChange={(role: IChatMessage['role']) => {
+                    setFormData({
+                      ...formData,
+                      messages: map(formData.messages, (m, i) =>
+                        i === index ? { ...m, role } : m,
+                      ),
+                    });
+                  }}
+                >
+                  <SelectTrigger className="w-[180px] truncate">
+                    <SelectValue placeholder="Role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {map(['system', 'assistant', 'user']).map(
+                        (role, index) => (
+                          <SelectItem key={index} value={role}>
+                            {capitalize(role)}
+                          </SelectItem>
+                        ),
+                      )}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <TextareaAutosize
+                  value={message.content}
+                  placeholder="Message"
+                  className="block w-full resize-none overscroll-contain rounded-lg border bg-background px-3 py-2.5 pr-[140px] outline-none scrollbar scrollbar-thumb-accent-foreground/30 scrollbar-thumb-rounded-full scrollbar-w-[3px] placeholder:text-foreground disabled:cursor-not-allowed disabled:opacity-50"
+                  spellCheck={false}
+                  minRows={1}
+                  maxRows={4}
+                  onChange={(e) => {
+                    setFormData({
+                      ...formData,
+                      messages: map(formData.messages, (m, i) =>
+                        i === index ? { ...m, content: e.target.value } : m,
+                      ),
+                    });
+                  }}
+                />
+                <div className="shrink-0">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => {
+                      setFormData({
+                        ...formData,
+                        messages: filter(
+                          formData.messages,
+                          (_m, i) => i !== index,
+                        ),
+                      });
+                    }}
+                  >
+                    <RiCloseCircleLine size={16} />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+          <Button
+            variant="outline"
+            onClick={() => {
+              setFormData({
+                ...formData,
+                messages: [
+                  ...formData.messages,
+                  {
+                    role: 'system',
+                    content: '',
+                    createdAt: new Date(),
+                  },
+                ],
+              });
+            }}
+          >
+            Add Message
+          </Button>
+          <div className="text-end">
+            <Button type="submit" onClick={handleSubmit}>
+              Save
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+const MaskItem = ({
+  mask,
+  onClick,
+  onDelete,
+}: {
+  mask: IMask;
+  onClick: () => void;
+  onDelete: () => void;
+}) => {
   const { t } = useTranslation();
 
   return (
@@ -32,6 +231,11 @@ const MaskItem = ({ mask, onClick }: { mask: IMask; onClick: () => void }) => {
           <RiChat3Line size={16} />
           <span className="ml-1.5">{t('masks.chat')}</span>
         </Button>
+        {!mask.builtIn && (
+          <Button variant="ghost" size="sm" onClick={onDelete}>
+            <RiDeleteBin4Line size={16} />
+          </Button>
+        )}
       </div>
     </div>
   );
@@ -61,25 +265,30 @@ export default function Masks() {
       <AppBar
         title={t('masks.title')}
         subtitle={t('masks.subtitle')}
-        actions={
+        actions={[
+          <AddNewMaskButton key={1} />,
           <AppBarIconButton
-            key={1}
+            key={2}
             IconComponent={RiCloseLine}
             onClick={() => router.back()}
-          />
-        }
+          />,
+        ]}
       />
       <div className="flex flex-1 flex-col gap-3 p-4">
         <FadeIn>
           <Card>
             <div className="divide-y">
-              {map(maskStore.masks, (mask) => (
-                <MaskItem
-                  key={mask.id}
-                  mask={mask}
-                  onClick={() => handleAddChat(mask)}
-                />
-              ))}
+              {_(maskStore.masks)
+                .orderBy((mask) => mask.createdAt, 'desc')
+                .map((mask) => (
+                  <MaskItem
+                    key={mask.id}
+                    mask={mask}
+                    onClick={() => handleAddChat(mask)}
+                    onDelete={() => maskStore.deleteMask(mask.id)}
+                  />
+                ))
+                .value()}
             </div>
           </Card>
         </FadeIn>

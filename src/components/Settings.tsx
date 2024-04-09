@@ -1,17 +1,9 @@
 'use client';
 
-import emojiData from '@emoji-mart/data';
-import Picker from '@emoji-mart/react';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@radix-ui/react-popover';
 import _, { isEmpty, isNil, map, toNumber } from 'lodash';
 import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import type { ReactNode } from 'react';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { RiCloseLine } from 'react-icons/ri';
 
@@ -27,6 +19,7 @@ import type { IChatSetting } from '@/types';
 import { SendKeys } from '@/types';
 
 import { AppBar, AppBarIconButton } from './AppBar';
+import { EmojiPickerButton } from './EmojiPickerButton';
 import { useConfirmDialog } from './Providers/ConfirmDialogProvider';
 import { Button } from './UI/Button';
 import { Card } from './UI/Card';
@@ -63,40 +56,6 @@ const BoxItem = ({
     <div className="flex shrink-0">{children}</div>
   </div>
 );
-
-const EmojiPickerButton = ({
-  value,
-  onChange,
-}: {
-  value: string;
-  onChange: (value: string) => void;
-}) => {
-  const [open, setOpen] = useState<boolean>(false);
-
-  const { theme, systemTheme } = useTheme();
-
-  return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <div className="z-10">
-          <Button variant="outline" size="icon" className="text-xl shadow-none">
-            {value}
-          </Button>
-        </div>
-      </PopoverTrigger>
-      <PopoverContent side="bottom" align="end" className="z-20">
-        <Picker
-          theme={theme || systemTheme}
-          data={emojiData}
-          onEmojiSelect={(data: { native: string }) => {
-            onChange(data.native);
-            setOpen(false);
-          }}
-        />
-      </PopoverContent>
-    </Popover>
-  );
-};
 
 export const Settings = () => {
   const { t } = useTranslation();
