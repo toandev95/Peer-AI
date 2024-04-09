@@ -28,6 +28,9 @@ User language: {language}.`;
 export async function POST(
   req: NextRequest,
 ): Promise<NextResponse | StreamingTextResponse> {
+  const customApiKey = req.headers.get('x-custom-api-key');
+  const customBaseUrl = req.headers.get('x-custom-base-url');
+
   const json = await req.json();
 
   const {
@@ -72,15 +75,21 @@ export async function POST(
     .value();
   const currentMessage = _.last(messages) as ChatMessage;
 
-  const llm = new ChatOpenAI({
-    modelName,
-    maxTokens,
-    temperature,
-    topP,
-    frequencyPenalty,
-    presencePenalty,
-    streaming,
-  });
+  const llm = new ChatOpenAI(
+    {
+      modelName,
+      maxTokens,
+      temperature,
+      topP,
+      frequencyPenalty,
+      presencePenalty,
+      streaming,
+      openAIApiKey: customApiKey || process.env.OPENAI_API_KEY,
+    },
+    {
+      baseURL: customBaseUrl || process.env.OPENAI_BASE_URL,
+    },
+  );
 
   const prompt = ChatPromptTemplate.fromMessages([
     ['system', PEER_AI_CONVERSATION_PROMPT],

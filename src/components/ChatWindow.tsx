@@ -314,14 +314,14 @@ export const ChatWindow = ({ id }: { id: IChat['id'] }) => {
       ],
       language: i18n.language,
       streaming: true,
-      headers: {
-        ...(!isNil(configStore.customApiKey)
-          ? { 'X-Custom-Api-Key': configStore.customApiKey }
-          : {}),
-        ...(!isNil(configStore.customBaseUrl)
-          ? { 'X-Custom-Base-Url': configStore.customBaseUrl }
-          : {}),
-      },
+    },
+    headers: {
+      ...(!isNil(configStore.customApiKey)
+        ? { 'X-Custom-Api-Key': configStore.customApiKey }
+        : {}),
+      ...(!isNil(configStore.customBaseUrl)
+        ? { 'X-Custom-Base-Url': configStore.customBaseUrl }
+        : {}),
     },
     onFinish: () => {
       handleGenerateTitle();
