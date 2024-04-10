@@ -30,7 +30,7 @@ export const EmojiPickerButton = ({
           </Button>
         </div>
       </PopoverTrigger>
-      <PopoverContent side="bottom" align="end" className="z-20">
+      <PopoverContent side="bottom" className="z-20">
         <Picker
           theme={theme || systemTheme}
           data={emojiData}

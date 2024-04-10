@@ -1,16 +1,19 @@
 'use client';
 
 import { nanoid } from 'ai';
-import _, { capitalize, filter, isEmpty, isNil, map, merge } from 'lodash';
+import _, { capitalize, filter, isEmpty, isNil, map } from 'lodash';
+import moment from 'moment';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { IoDuplicateOutline } from 'react-icons/io5';
 import {
   RiAddCircleLine,
   RiChat3Line,
   RiCloseCircleLine,
   RiCloseLine,
   RiDeleteBin4Line,
+  RiEditCircleLine,
 } from 'react-icons/ri';
 import TextareaAutosize from 'react-textarea-autosize';
 
@@ -59,14 +62,15 @@ const AddNewMaskButton = () => {
   const handleAddNewMessage = () => {
     setFormData({
       ...formData,
-      messages: merge(formData.messages, [
+      messages: [
+        ...formData.messages,
         {
           id: nanoid(),
           role: 'system',
           content: '',
           createdAt: new Date(),
         },
-      ]),
+      ],
     });
   };
 
@@ -96,7 +100,7 @@ const AddNewMaskButton = () => {
           <AppBarIconButton key={1} IconComponent={RiAddCircleLine} />
         </div>
       </DialogTrigger>
-      <DialogContent className="max-w-[600px]">
+      <DialogContent className="max-w-[800px]">
         <DialogHeader>
           <DialogTitle>Add New Mask</DialogTitle>
           <DialogDescription>
@@ -180,7 +184,170 @@ const AddNewMaskButton = () => {
                         ...formData,
                         messages: filter(
                           formData.messages,
-                          (m) => m.id === message.id,
+                          (m) => m.id !== message.id,
+                        ),
+                      });
+                    }}
+                  >
+                    <RiCloseCircleLine size={16} />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+          {formData.messages.length <= 3 && (
+            <Button variant="outline" onClick={() => handleAddNewMessage()}>
+              Add Message
+            </Button>
+          )}
+          <div className="text-end">
+            <Button onClick={handleSubmit}>Save</Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+const EditMaskButton = ({ mask }: { mask: IMask }) => {
+  const maskStore = useMaskStore();
+
+  const [open, setOpen] = useState<boolean>(false);
+
+  const [formData, setFormData] = useState<AddNewMaskFormData>({
+    title: mask.title,
+    emoji: mask.emoji,
+    messages: mask.messages,
+  });
+
+  const handleAddNewMessage = () => {
+    setFormData({
+      ...formData,
+      messages: [
+        ...formData.messages,
+        {
+          id: nanoid(),
+          role: 'system',
+          content: '',
+          createdAt: new Date(),
+        },
+      ],
+    });
+  };
+
+  const handleSubmit = () => {
+    if (
+      isEmpty(formData.title) ||
+      isEmpty(formData.emoji) ||
+      isEmpty(formData.messages)
+    ) {
+      return;
+    }
+
+    maskStore.updateMask(mask.id, {
+      ...formData,
+      id: uuid(),
+      createdAt: new Date().toISOString(),
+      builtIn: false,
+    });
+
+    setOpen(false);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <div>
+          <Button variant="ghost" size="sm" onClick={() => setOpen(true)}>
+            <RiEditCircleLine size={16} />
+          </Button>
+        </div>
+      </DialogTrigger>
+      <DialogContent className="max-w-[800px]">
+        <DialogHeader>
+          <DialogTitle>Edit Mask</DialogTitle>
+          <DialogDescription>
+            Edit the mask details and messages.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="flex flex-col gap-4">
+          <div className="flex w-full gap-3">
+            <EmojiPickerButton
+              value={formData.emoji}
+              onChange={(emoji) => {
+                setFormData({ ...formData, emoji });
+              }}
+            />
+            <Input
+              value={formData.title}
+              onChange={(e) => {
+                setFormData({
+                  ...formData,
+                  title: e.target.value,
+                });
+              }}
+              placeholder="Title"
+              maxLength={50}
+            />
+          </div>
+          <div className="flex w-full flex-col gap-2">
+            <div className="font-semibold">Messages:</div>
+            {map(formData.messages, (message, index) => (
+              <div key={index} className="flex gap-3">
+                <Select
+                  value={message.role}
+                  onValueChange={(role: IChatMessage['role']) => {
+                    setFormData({
+                      ...formData,
+                      messages: map(formData.messages, (m) =>
+                        m.id === message.id ? { ...m, role } : m,
+                      ),
+                    });
+                  }}
+                >
+                  <SelectTrigger className="w-[180px] truncate">
+                    <SelectValue placeholder="Role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {map(['system', 'assistant', 'user']).map(
+                        (role, index) => (
+                          <SelectItem key={index} value={role}>
+                            {capitalize(role)}
+                          </SelectItem>
+                        ),
+                      )}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <TextareaAutosize
+                  value={message.content}
+                  placeholder="Message"
+                  className="block w-full resize-none overscroll-contain rounded-lg border bg-background px-3 py-2.5 pr-[140px] outline-none scrollbar scrollbar-thumb-accent-foreground/30 scrollbar-thumb-rounded-full scrollbar-w-[3px] placeholder:text-foreground disabled:cursor-not-allowed disabled:opacity-50"
+                  spellCheck={false}
+                  minRows={1}
+                  maxRows={4}
+                  onChange={(e) => {
+                    setFormData({
+                      ...formData,
+                      messages: map(formData.messages, (m) => {
+                        return m.id === message.id
+                          ? { ...m, content: e.target.value }
+                          : m;
+                      }),
+                    });
+                  }}
+                />
+                <div className="shrink-0">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => {
+                      setFormData({
+                        ...formData,
+                        messages: filter(
+                          formData.messages,
+                          (m) => m.id !== message.id,
                         ),
                       });
                     }}
@@ -208,10 +375,12 @@ const AddNewMaskButton = () => {
 const MaskItem = ({
   mask,
   onClick,
+  onClone,
   onDelete,
 }: {
   mask: IMask;
   onClick: () => void;
+  onClone: () => void;
   onDelete: () => void;
 }) => {
   const { t } = useTranslation();
@@ -223,8 +392,18 @@ const MaskItem = ({
       </div>
       <div className="flex grow flex-col gap-0.5">
         <div className="font-medium">{mask.title}</div>
-        <div className="text-xs text-muted-foreground">
-          {t('masks.totalPrompts', { count: mask.messages.length })}
+        <div className="flex gap-1 text-xs text-muted-foreground">
+          <span>
+            {t('masks.totalPrompts', { count: mask.messages.length })}
+          </span>
+          {!mask.builtIn && (
+            <>
+              <span>·</span>
+              <span>Customized</span>
+              <span>·</span>
+              <span>{moment(mask.createdAt).format('lll')}</span>
+            </>
+          )}
         </div>
       </div>
       <div className="flex gap-1">
@@ -232,10 +411,16 @@ const MaskItem = ({
           <RiChat3Line size={16} />
           <span className="ml-1.5">{t('masks.chat')}</span>
         </Button>
+        <Button variant="ghost" size="sm" onClick={onClone}>
+          <IoDuplicateOutline size={16} />
+        </Button>
         {!mask.builtIn && (
-          <Button variant="ghost" size="sm" onClick={onDelete}>
-            <RiDeleteBin4Line size={16} />
-          </Button>
+          <>
+            <EditMaskButton mask={mask} />
+            <Button variant="ghost" size="sm" onClick={onDelete}>
+              <RiDeleteBin4Line size={16} />
+            </Button>
+          </>
         )}
       </div>
     </div>
@@ -259,6 +444,15 @@ export default function Masks() {
     }
 
     router.push(`/conversations/${newChat.id}`);
+  };
+
+  const handleCloneMask = (mask: IMask) => {
+    maskStore.addMask({
+      ...mask,
+      id: uuid(),
+      createdAt: new Date().toISOString(),
+      builtIn: false,
+    });
   };
 
   return (
@@ -286,6 +480,7 @@ export default function Masks() {
                     key={mask.id}
                     mask={mask}
                     onClick={() => handleAddChat(mask)}
+                    onClone={() => handleCloneMask(mask)}
                     onDelete={() => maskStore.deleteMask(mask.id)}
                   />
                 ))
