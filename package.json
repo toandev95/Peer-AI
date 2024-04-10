@@ -8,7 +8,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "clean": "rimraf .next out"
+    "clean": "rimraf .next out",
+    "prepare": "husky",
+    "commitlint": "commitlint --edit"
   },
   "dependencies": {
     "@emoji-mart/data": "^1.1.2",
@@ -69,6 +71,8 @@
     "zustand": "^4.5.2"
   },
   "devDependencies": {
+    "@commitlint/cli": "^19.2.1",
+    "@commitlint/config-conventional": "^19.1.0",
     "@netlify/plugin-nextjs": "^5.0.0",
     "@tanstack/eslint-plugin-query": "^5.28.11",
     "@types/html-to-text": "^9.0.4",
@@ -92,6 +96,7 @@
     "eslint-plugin-simple-import-sort": "^12.0.0",
     "eslint-plugin-tailwindcss": "^3.15.1",
     "eslint-plugin-unused-imports": "^3.1.0",
+    "husky": "^9.0.11",
     "postcss": "^8.4.38",
     "rimraf": "^5.0.5",
     "tailwindcss": "^3.4.3",
