@@ -1,7 +1,7 @@
 'use client';
 
 import { nanoid } from 'ai';
-import _, { capitalize, filter, isEmpty, isNil, map } from 'lodash';
+import _, { capitalize, filter, isEmpty, isNil, map, merge } from 'lodash';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -42,7 +42,7 @@ import {
 } from './UI/Select';
 
 type AddNewMaskFormData = Pick<IMask, 'title' | 'emoji'> & {
-  messages: Pick<IChatMessage, 'role' | 'content' | 'createdAt'>[];
+  messages: Pick<IChatMessage, 'id' | 'role' | 'content' | 'createdAt'>[];
 };
 
 const AddNewMaskButton = () => {
@@ -56,6 +56,20 @@ const AddNewMaskButton = () => {
     messages: [],
   });
 
+  const handleAddNewMessage = () => {
+    setFormData({
+      ...formData,
+      messages: merge(formData.messages, [
+        {
+          id: nanoid(),
+          role: 'system',
+          content: '',
+          createdAt: new Date(),
+        },
+      ]),
+    });
+  };
+
   const handleSubmit = () => {
     if (
       isEmpty(formData.title) ||
@@ -68,10 +82,6 @@ const AddNewMaskButton = () => {
     maskStore.addMask({
       ...formData,
       id: uuid(),
-      messages: map(formData.messages, (message) => ({
-        ...message,
-        id: nanoid(),
-      })),
       createdAt: new Date().toISOString(),
       builtIn: false,
     });
@@ -104,9 +114,13 @@ const AddNewMaskButton = () => {
             <Input
               value={formData.title}
               onChange={(e) => {
-                setFormData({ ...formData, title: e.target.value });
+                setFormData({
+                  ...formData,
+                  title: e.target.value,
+                });
               }}
-              placeholder="Mask name"
+              placeholder="Title"
+              maxLength={50}
             />
           </div>
           <div className="flex w-full flex-col gap-2">
@@ -118,8 +132,8 @@ const AddNewMaskButton = () => {
                   onValueChange={(role: IChatMessage['role']) => {
                     setFormData({
                       ...formData,
-                      messages: map(formData.messages, (m, i) =>
-                        i === index ? { ...m, role } : m,
+                      messages: map(formData.messages, (m) =>
+                        m.id === message.id ? { ...m, role } : m,
                       ),
                     });
                   }}
@@ -149,9 +163,11 @@ const AddNewMaskButton = () => {
                   onChange={(e) => {
                     setFormData({
                       ...formData,
-                      messages: map(formData.messages, (m, i) =>
-                        i === index ? { ...m, content: e.target.value } : m,
-                      ),
+                      messages: map(formData.messages, (m) => {
+                        return m.id === message.id
+                          ? { ...m, content: e.target.value }
+                          : m;
+                      }),
                     });
                   }}
                 />
@@ -164,7 +180,7 @@ const AddNewMaskButton = () => {
                         ...formData,
                         messages: filter(
                           formData.messages,
-                          (_m, i) => i !== index,
+                          (m) => m.id === message.id,
                         ),
                       });
                     }}
@@ -175,28 +191,13 @@ const AddNewMaskButton = () => {
               </div>
             ))}
           </div>
-          <Button
-            variant="outline"
-            onClick={() => {
-              setFormData({
-                ...formData,
-                messages: [
-                  ...formData.messages,
-                  {
-                    role: 'system',
-                    content: '',
-                    createdAt: new Date(),
-                  },
-                ],
-              });
-            }}
-          >
-            Add Message
-          </Button>
-          <div className="text-end">
-            <Button type="submit" onClick={handleSubmit}>
-              Save
+          {formData.messages.length <= 3 && (
+            <Button variant="outline" onClick={() => handleAddNewMessage()}>
+              Add Message
             </Button>
+          )}
+          <div className="text-end">
+            <Button onClick={handleSubmit}>Save</Button>
           </div>
         </div>
       </DialogContent>

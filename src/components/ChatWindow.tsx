@@ -24,8 +24,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   RiArrowDownLine,
-  RiBookletLine,
-  RiChat3Line,
   RiFullscreenExitLine,
   RiFullscreenLine,
   RiLoader3Line,
@@ -36,7 +34,7 @@ import {
 } from 'react-icons/ri';
 import { VscClearAll } from 'react-icons/vsc';
 import TextareaAutosize from 'react-textarea-autosize';
-import { useEffectOnce, useToggle } from 'react-use';
+import { useDebounce, useEffectOnce, useToggle } from 'react-use';
 
 import { useBreakpoint, useChatScrollAnchor, useEnterSubmit } from '@/hooks';
 import i18n from '@/i18n';
@@ -47,7 +45,6 @@ import type { IChat, IChatMessage, IChatSetting, IPrompt } from '@/types';
 import { AppBar, AppBarIconButton } from './AppBar';
 import { ChatBubble } from './ChatBubble';
 import { ToolbarIconButton, ToolbarSettingItem } from './ChatToolbar';
-import { CustomizedReactMarkdown } from './Markdown';
 import { useConfirmDialog } from './Providers/ConfirmDialogProvider';
 import { Button } from './UI/Button';
 import { ConfirmDialog } from './UI/ConfirmDialog';
@@ -201,10 +198,6 @@ export const ChatWindow = ({ id }: { id: IChat['id'] }) => {
       .value();
   }, [cleanedMessages, configStore.paginationSize, endIndex]);
 
-  const lastAssistantMessage = _(paginatedMessages)
-    .filter((message) => message.role === 'assistant')
-    .first();
-
   const handleGenerateTitle = async () => {
     if (!configStore.autoGenerateTitle) {
       return;
@@ -349,13 +342,13 @@ export const ChatWindow = ({ id }: { id: IChat['id'] }) => {
     updateChatSettings,
   ]);
 
-  useEffect(() => {
-    syncMessages(currentChat.id, messages as IChatMessage[]);
-  }, [currentChat.id, messages, syncMessages]);
-
-  // const isInputEmpty = useMemo(() => {
-  //   return !configStore.sendPreviewBubble || isEmpty(input);
-  // }, [configStore.sendPreviewBubble, input]);
+  useDebounce(
+    () => {
+      syncMessages(currentChat.id, messages as IChatMessage[]);
+    },
+    100,
+    [currentChat.id, messages, syncMessages],
+  );
 
   const isShowPrompt = useMemo(() => {
     if (isEmpty(promptStore.prompts)) {
@@ -507,66 +500,53 @@ export const ChatWindow = ({ id }: { id: IChat['id'] }) => {
           </>
         }
       />
-      {!currentChat.settings.isNotebookMode && (
-        <div className="flex flex-1 flex-col-reverse gap-5 p-4">
-          {configStore.sendPreviewBubble &&
-            !isEmpty(input) &&
-            !isEqual(input, '/') && (
-              <ChatBubble
-                emoji={configStore.emoji}
-                message={{
-                  id: uuid(),
-                  role: 'user',
-                  content: input,
-                  createdAt: moment().toDate(),
-                }}
-              />
-            )}
-          {!isNil(error) && (
+      <div className="flex flex-1 flex-col-reverse gap-5 p-4">
+        {configStore.sendPreviewBubble &&
+          !isEmpty(input) &&
+          !isEqual(input, '/') && (
             <ChatBubble
-              emoji={getEmojiFromRole('assistant')}
+              emoji={configStore.emoji}
               message={{
                 id: uuid(),
-                role: 'assistant',
-                content: 'Something went wrong, please try again.',
+                role: 'user',
+                content: input,
                 createdAt: moment().toDate(),
               }}
             />
           )}
-          {map(paginatedMessages, (message) => (
-            <ChatBubble
-              key={message.id}
-              emoji={getEmojiFromRole(message.role)}
-              message={message}
-              onChange={(newContent) =>
-                handleChangeMessage(message, newContent)
-              }
-              onRegenerate={() => handleRegenerateMessage(message)}
-              onRemove={() => handleRemoveMessage(message)}
-              allowTextToSpeech
-              allowCopy
-            />
-          ))}
-          {isEmpty(paginatedMessages) &&
-            (!configStore.sendPreviewBubble || isEmpty(input)) &&
-            isNil(error) && (
-              <div className="flex size-full flex-col items-center justify-center">
-                <div className="text-lg font-medium text-muted-foreground/60">
-                  {t('chatWindow.emptyChat')}
-                </div>
+        {!isNil(error) && (
+          <ChatBubble
+            emoji={getEmojiFromRole('assistant')}
+            message={{
+              id: uuid(),
+              role: 'assistant',
+              content: 'Something went wrong, please try again.',
+              createdAt: moment().toDate(),
+            }}
+          />
+        )}
+        {map(paginatedMessages, (message) => (
+          <ChatBubble
+            key={message.id}
+            emoji={getEmojiFromRole(message.role)}
+            message={message}
+            onChange={(newContent) => handleChangeMessage(message, newContent)}
+            onRegenerate={() => handleRegenerateMessage(message)}
+            onRemove={() => handleRemoveMessage(message)}
+            allowTextToSpeech
+            allowCopy
+          />
+        ))}
+        {isEmpty(paginatedMessages) &&
+          (!configStore.sendPreviewBubble || isEmpty(input)) &&
+          isNil(error) && (
+            <div className="flex size-full flex-col items-center justify-center">
+              <div className="text-lg font-medium text-muted-foreground/60">
+                {t('chatWindow.emptyChat')}
               </div>
-            )}
-        </div>
-      )}
-      {currentChat.settings.isNotebookMode && (
-        <div className="flex-1 bg-background p-4">
-          {!isNil(lastAssistantMessage) && (
-            <CustomizedReactMarkdown className="prose prose-sm max-w-full select-text break-words dark:prose-invert prose-p:leading-relaxed prose-img:my-0">
-              {lastAssistantMessage.content}
-            </CustomizedReactMarkdown>
+            </div>
           )}
-        </div>
-      )}
+      </div>
       <div className="sticky bottom-0 flex flex-col gap-2 border-t bg-background/60 px-4 py-3 backdrop-blur">
         {isShowPrompt && (
           <FadeIn className="flex max-h-[20vh] flex-col divide-y overflow-y-auto overscroll-contain rounded-lg border bg-background text-xs scrollbar scrollbar-thumb-accent-foreground/30 scrollbar-thumb-rounded-full scrollbar-w-[3px]">
@@ -588,27 +568,6 @@ export const ChatWindow = ({ id }: { id: IChat['id'] }) => {
             label={t('chatWindow.toolbar.prompts')}
             onClick={() => setIsShowToolbarPrompt()}
           />
-          {!currentChat.settings.isNotebookMode ? (
-            <ToolbarIconButton
-              IconComponent={RiChat3Line}
-              label="Chat"
-              onClick={() => {
-                updateChatSettings(currentChat.id, { isNotebookMode: true });
-
-                setTimeout(scrollToBottom, 0);
-              }}
-            />
-          ) : (
-            <ToolbarIconButton
-              IconComponent={RiBookletLine}
-              label="Notebook"
-              onClick={() => {
-                updateChatSettings(currentChat.id, { isNotebookMode: false });
-
-                setTimeout(scrollToBottom, 0);
-              }}
-            />
-          )}
           <Dialog>
             <DialogTrigger asChild>
               <div className="z-10">
