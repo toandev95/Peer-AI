@@ -1,8 +1,8 @@
-import './src/lib/env.mjs';
+import { env } from './src/lib/env.mjs';
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: process.env.NEXT_PUBLIC_APP_URL ? 'export' : 'standalone',
+  output: env.NEXT_PUBLIC_APP_URL ? 'export' : 'standalone',
   reactStrictMode: true,
   eslint: { dirs: ['.'] },
   images: {
@@ -24,7 +24,7 @@ const nextConfig = {
           },
           {
             key: 'Access-Control-Allow-Origin',
-            value: 'http://localhost:3000',
+            value: '*',
           },
           {
             key: 'Access-Control-Allow-Methods',
@@ -32,7 +32,7 @@ const nextConfig = {
           },
           {
             key: 'Access-Control-Allow-Headers',
-            value: `X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version`,
+            value: `X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, Authorization, X-Api-Version, X-Custom-Api-Key, X-Custom-Base-Url`,
           },
         ],
       },
