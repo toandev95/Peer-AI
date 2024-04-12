@@ -7,10 +7,13 @@ import { useChatStore } from '@/stores';
 import { ChatStart } from './ChatStart';
 import { ChatWindow } from './ChatWindow';
 
-export const ChatUI = ({ id }: { id?: string }) => {
-  const currentChat = useChatStore((state) => state.getChatById(id || ''));
+export const ChatUI = () => {
+  const currentChatId = useChatStore((state) => state.currentChatId);
+  const currentChat = useChatStore((state) =>
+    state.getChatById(currentChatId || ''),
+  );
 
-  if (isNil(id) || isNil(currentChat)) {
+  if (isNil(currentChat)) {
     return <ChatStart />;
   }
 

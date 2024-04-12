@@ -234,26 +234,10 @@ export const Settings = () => {
         <FadeIn>
           <Card>
             <div className="divide-y">
-              <BoxItem title="Custom API Key">
-                <DebouncedInput
-                  type="password"
-                  placeholder="API Key"
-                  className="text-center"
-                  value={configStore.customApiKey || ''}
-                  autoComplete="off"
-                  onDebounceChange={(raw) => {
-                    if (isNil(raw)) {
-                      return;
-                    }
-
-                    const value = raw.toString().trim();
-                    updateConfig({
-                      customApiKey: !isEmpty(value) ? value : undefined,
-                    });
-                  }}
-                />
-              </BoxItem>
-              <BoxItem title="Custom Base URL">
+              <BoxItem
+                title="Custom Base URL"
+                subtitle="The default is the path to the OpenAI API (https://api.openai.com/v1)."
+              >
                 <DebouncedInput
                   type="url"
                   placeholder="Base URL"
@@ -268,6 +252,28 @@ export const Settings = () => {
                     const value = raw.toString().trim();
                     updateConfig({
                       customBaseUrl: !isEmpty(value) ? value : undefined,
+                    });
+                  }}
+                />
+              </BoxItem>
+              <BoxItem
+                title="Custom API Key"
+                subtitle="The default is the OpenAI API key if you don't set a Custom Base Url."
+              >
+                <DebouncedInput
+                  type="password"
+                  placeholder="API Key"
+                  className="text-center"
+                  value={configStore.customApiKey || ''}
+                  autoComplete="off"
+                  onDebounceChange={(raw) => {
+                    if (isNil(raw)) {
+                      return;
+                    }
+
+                    const value = raw.toString().trim();
+                    updateConfig({
+                      customApiKey: !isEmpty(value) ? value : undefined,
                     });
                   }}
                 />

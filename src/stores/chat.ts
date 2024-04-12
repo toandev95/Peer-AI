@@ -11,10 +11,12 @@ import type { IChat, IChatMessage, IChatSetting, IMask } from '@/types';
 import { useConfigStore } from './config';
 
 type ChatState = {
+  currentChatId?: string;
   chats: IChat[];
 };
 
 type ChatAction = {
+  setCurrentChatId: (id?: string) => void;
   updateChats: (chats: IChat[]) => void;
   addChat: (title: string) => IChat;
   getChatById: (id: string) => IChat;
@@ -34,6 +36,8 @@ export const useChatStore = create<ChatState & ChatAction>()(
   persist(
     (set, get) => ({
       chats: [],
+
+      setCurrentChatId: (id) => set({ currentChatId: id }),
 
       updateChats: (chats) => set({ chats }),
 

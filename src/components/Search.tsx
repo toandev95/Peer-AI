@@ -20,7 +20,9 @@ import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 
 import i18n from '@/i18n';
+import { env } from '@/lib/env.mjs';
 import { cn } from '@/lib/helpers';
+import { useConfigStore } from '@/stores';
 
 import { AppBar, AppBarIconButton } from './AppBar';
 import { MemoizedReactMarkdown } from './Markdown';
@@ -92,9 +94,13 @@ const placeholder = sample([
 ]);
 
 const Search = () => {
+  const { NEXT_PUBLIC_APP_URL } = env;
+
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  const configStore = useConfigStore();
 
   const [isFirstSearch, setIsFirstSearch] = useState<boolean>(true);
   const [query, setQuery] = useState<string>(searchParams.get('q') || '');
@@ -106,12 +112,20 @@ const Search = () => {
     mutateAsync: requestSearch,
   } = useMutation({
     mutationFn: async (query: string) => {
-      const response = await fetch('/api/search', {
+      const response = await fetch(`${NEXT_PUBLIC_APP_URL || ''}/api/search`, {
         method: 'POST',
         body: JSON.stringify({
           query,
           language: i18n.language,
         }),
+        headers: {
+          ...(!isNil(configStore.customApiKey)
+            ? { 'X-Custom-Api-Key': configStore.customApiKey }
+            : {}),
+          ...(!isNil(configStore.customBaseUrl)
+            ? { 'X-Custom-Base-Url': configStore.customBaseUrl }
+            : {}),
+        },
       });
 
       if (!response.ok) {

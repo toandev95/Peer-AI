@@ -8,6 +8,8 @@ import type { ServerRuntime } from 'next';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
+import { env } from '@/lib/env.mjs';
+
 const RAG_QUERY_PROMPT = `You are a helpful assistant that helps users answer questions from contextual data provided by Google search results. Based on specific search results, answer the user's specific question as accurately as possible.
 Use available sources to write complete but concise answers. Avoid repeating information and maintain a neutral and journalistic tone. Synthesize information from search results into a coherent answer.
 Prefer to answer using the user's language or in the same language as the original question and contextual data, answers should use MARKDOWN syntax. Please cite the exact context with a reference number in the [citation:$number] format. If a sentence comes from multiple contexts, please list all applicable citations, like [citation:3][citation:5].
@@ -43,6 +45,9 @@ User language:
 Related questions would be:`;
 
 export async function POST(req: NextRequest): Promise<Response> {
+  const customApiKey = req.headers.get('x-custom-api-key');
+  const customBaseUrl = req.headers.get('x-custom-base-url');
+
   const { query, language } = (await req.json()) as {
     query: string;
     language: string;
@@ -98,12 +103,16 @@ export async function POST(req: NextRequest): Promise<Response> {
     });
   });
 
-  const llm = new OpenAI({
-    temperature: 0.7,
-    maxTokens: 1024,
-    modelName: 'gpt-4',
-    streaming: true,
-  });
+  const llm = new OpenAI(
+    {
+      temperature: 0.7,
+      maxTokens: 1024,
+      // modelName: 'gpt-4',
+      streaming: true,
+      openAIApiKey: customApiKey || env.OPENAI_API_KEY,
+    },
+    { baseURL: customBaseUrl || env.OPENAI_BASE_URL },
+  );
 
   const ragChain = await createStuffDocumentsChain({
     llm,

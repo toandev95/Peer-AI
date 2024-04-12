@@ -4,6 +4,8 @@ import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
+import { env } from '@/lib/env.mjs';
+
 export const runtime: ServerRuntime = 'edge';
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
@@ -11,8 +13,8 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   const customBaseUrl = req.headers.get('x-custom-base-url');
 
   const api = new OpenAI({
-    apiKey: customApiKey || process.env.OPENAI_API_KEY,
-    baseURL: customBaseUrl || process.env.OPENAI_BASE_URL,
+    apiKey: customApiKey || env.OPENAI_API_KEY,
+    baseURL: customBaseUrl || env.OPENAI_BASE_URL,
   });
 
   try {

@@ -3,7 +3,7 @@
 import { nanoid } from 'ai';
 import _, { capitalize, filter, isEmpty, isNil, map } from 'lodash';
 import moment from 'moment';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IoDuplicateOutline } from 'react-icons/io5';
@@ -100,7 +100,7 @@ const AddNewMaskButton = () => {
           <AppBarIconButton key={1} IconComponent={RiAddCircleLine} />
         </div>
       </DialogTrigger>
-      <DialogContent className="max-w-[800px]">
+      <DialogContent className="max-w-[720px]">
         <DialogHeader>
           <DialogTitle>Add New Mask</DialogTitle>
           <DialogDescription>
@@ -263,7 +263,7 @@ const EditMaskButton = ({ mask }: { mask: IMask }) => {
           </Button>
         </div>
       </DialogTrigger>
-      <DialogContent className="max-w-[800px]">
+      <DialogContent className="max-w-[720px]">
         <DialogHeader>
           <DialogTitle>Edit Mask</DialogTitle>
           <DialogDescription>
@@ -431,6 +431,7 @@ export default function Masks() {
   const { t } = useTranslation();
 
   const router = useRouter();
+  const pathname = usePathname();
 
   const chatStore = useChatStore();
   const maskStore = useMaskStore();
@@ -443,7 +444,11 @@ export default function Masks() {
       chatStore.updateChatTitle(newChat.id, mask.title);
     }
 
-    router.push(`/conversations/${newChat.id}`);
+    chatStore.setCurrentChatId(newChat.id);
+
+    if (pathname !== '/') {
+      router.push('/');
+    }
   };
 
   const handleCloneMask = (mask: IMask) => {

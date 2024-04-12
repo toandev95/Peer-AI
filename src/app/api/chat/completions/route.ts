@@ -17,6 +17,7 @@ import type { ServerRuntime } from 'next';
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
+import { env } from '@/lib/env.mjs';
 import type { IChatMessage } from '@/types';
 
 const PEER_AI_CONVERSATION_PROMPT = `You are Peer AI, a large language AI assistant built by Toan Doan. You are designed to chat and answer questions in many fields, especially in technology. You cannot directly access real-time data or gain knowledge from recent events in 2024.
@@ -36,23 +37,23 @@ export async function POST(
   const {
     messages,
     model: modelName,
-    maxTokens,
+    max_tokens: maxTokens,
     temperature,
-    topP,
-    frequencyPenalty,
-    presencePenalty,
+    top_p: topP,
+    frequency_penalty: frequencyPenalty,
+    presence_penalty: presencePenalty,
+    stream: streaming,
     language,
-    streaming,
   } = json as {
     messages: Pick<IChatMessage, 'role' | 'content'>[];
     model?: string;
-    maxTokens?: number;
+    max_tokens?: number;
     temperature?: number;
-    topP?: number;
-    frequencyPenalty?: number;
-    presencePenalty?: number;
+    top_p?: number;
+    frequency_penalty?: number;
+    presence_penalty?: number;
+    stream?: boolean;
     language?: string;
-    streaming?: boolean;
   };
 
   const previousMessages = _(messages)
@@ -84,11 +85,9 @@ export async function POST(
       frequencyPenalty,
       presencePenalty,
       streaming,
-      openAIApiKey: customApiKey || process.env.OPENAI_API_KEY,
+      openAIApiKey: customApiKey || env.OPENAI_API_KEY,
     },
-    {
-      baseURL: customBaseUrl || process.env.OPENAI_BASE_URL,
-    },
+    { baseURL: customBaseUrl || env.OPENAI_BASE_URL },
   );
 
   const prompt = ChatPromptTemplate.fromMessages([

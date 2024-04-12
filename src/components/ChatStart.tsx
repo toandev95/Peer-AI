@@ -2,7 +2,7 @@
 
 import _, { isEmpty, isNil, map } from 'lodash';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { RiChat3Line, RiSearch2Line } from 'react-icons/ri';
@@ -18,6 +18,7 @@ export const ChatStart = () => {
   const { t } = useTranslation();
 
   const router = useRouter();
+  const pathname = usePathname();
 
   const chatStore = useChatStore();
   const maskStore = useMaskStore();
@@ -43,7 +44,11 @@ export const ChatStart = () => {
       chatStore.updateChatTitle(newChat.id, mask.title);
     }
 
-    router.push(`/conversations/${newChat.id}`);
+    chatStore.setCurrentChatId(newChat.id);
+
+    if (pathname !== '/') {
+      router.push('/');
+    }
   };
 
   const masks = useMemo(() => {

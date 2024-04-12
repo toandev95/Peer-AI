@@ -14,7 +14,6 @@ import _, {
   last,
   lastIndexOf,
   map,
-  omit,
   startsWith,
   takeWhile,
 } from 'lodash';
@@ -38,6 +37,7 @@ import { useDebounce, useEffectOnce, useToggle } from 'react-use';
 
 import { useBreakpoint, useChatScrollAnchor, useEnterSubmit } from '@/hooks';
 import i18n from '@/i18n';
+import { env } from '@/lib/env.mjs';
 import { getModelNameByModelID, uuid } from '@/lib/helpers';
 import { useChatStore, useConfigStore, usePromptStore } from '@/stores';
 import type { IChat, IChatMessage, IChatSetting, IPrompt } from '@/types';
@@ -127,6 +127,8 @@ export const AppBarEditTitleButton = ({
 };
 
 export const ChatWindow = ({ id }: { id: IChat['id'] }) => {
+  const { NEXT_PUBLIC_APP_URL } = env;
+
   const { t } = useTranslation();
 
   const confirm = useConfirmDialog(ConfirmDialog);
@@ -152,22 +154,25 @@ export const ChatWindow = ({ id }: { id: IChat['id'] }) => {
 
   const { mutateAsync: requestChat } = useMutation({
     mutationFn: async (messages: Pick<IChatMessage, 'role' | 'content'>[]) => {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        body: JSON.stringify({
-          messages,
-          language: i18n.language,
-          streaming: false,
-        }),
-        headers: {
-          ...(!isNil(configStore.customApiKey)
-            ? { 'X-Custom-Api-Key': configStore.customApiKey }
-            : {}),
-          ...(!isNil(configStore.customBaseUrl)
-            ? { 'X-Custom-Base-Url': configStore.customBaseUrl }
-            : {}),
+      const response = await fetch(
+        `${NEXT_PUBLIC_APP_URL || ''}/api/chat/completions`,
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            messages,
+            stream: false,
+            language: i18n.language,
+          }),
+          headers: {
+            ...(!isNil(configStore.customApiKey)
+              ? { 'X-Custom-Api-Key': configStore.customApiKey }
+              : {}),
+            ...(!isNil(configStore.customBaseUrl)
+              ? { 'X-Custom-Base-Url': configStore.customBaseUrl }
+              : {}),
+          },
         },
-      });
+      );
 
       if (!response.ok) {
         throw new Error('Something went wrong!');
@@ -281,11 +286,12 @@ export const ChatWindow = ({ id }: { id: IChat['id'] }) => {
     reload,
     error,
   } = useChat({
+    api: `${NEXT_PUBLIC_APP_URL || ''}/api/chat/completions`,
     id: currentChat.id,
     initialInput: currentChat.input,
     initialMessages: currentChat.messages,
     body: {
-      ...omit(currentChat.settings, 'summarizedIds'),
+      // ...omit(currentChat.settings, 'summarizedIds'),
       messages: [
         ...(!isNil(currentChat.contextSummary)
           ? [
@@ -305,8 +311,14 @@ export const ChatWindow = ({ id }: { id: IChat['id'] }) => {
             ]
           : []),
       ],
+      model: currentChat.settings.model,
+      max_tokens: currentChat.settings.maxTokens,
+      temperature: currentChat.settings.temperature,
+      top_p: currentChat.settings.topP,
+      frequency_penalty: currentChat.settings.frequencyPenalty,
+      presence_penalty: currentChat.settings.presencePenalty,
+      stream: true,
       language: i18n.language,
-      streaming: true,
     },
     headers: {
       ...(!isNil(configStore.customApiKey)
@@ -346,7 +358,7 @@ export const ChatWindow = ({ id }: { id: IChat['id'] }) => {
     () => {
       syncMessages(currentChat.id, messages as IChatMessage[]);
     },
-    100,
+    50,
     [currentChat.id, messages, syncMessages],
   );
 
@@ -422,7 +434,7 @@ export const ChatWindow = ({ id }: { id: IChat['id'] }) => {
   };
 
   const handleChangeMessage = (message: IChatMessage, newContent: string) => {
-    const newMessages = cloneDeep(messages);
+    const newMessages = cloneDeep(currentChat.messages);
 
     const targetMessage = find(newMessages, (msg) => msg.id === message.id);
     if (!isNil(targetMessage)) {
@@ -434,7 +446,7 @@ export const ChatWindow = ({ id }: { id: IChat['id'] }) => {
 
   const handleRegenerateMessage = async (message: IChatMessage) => {
     const newMessages = takeWhile(
-      cloneDeep(messages),
+      cloneDeep(currentChat.messages),
       (msg) => msg.id !== message.id,
     );
 
@@ -520,7 +532,8 @@ export const ChatWindow = ({ id }: { id: IChat['id'] }) => {
             message={{
               id: uuid(),
               role: 'assistant',
-              content: 'Something went wrong, please try again.',
+              content:
+                error.message || 'Something went wrong, please try again.',
               createdAt: moment().toDate(),
             }}
           />

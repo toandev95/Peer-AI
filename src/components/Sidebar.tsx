@@ -10,7 +10,7 @@ import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd';
 import _, { includes, isNil, map } from 'lodash';
 import moment from 'moment';
 import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -82,12 +82,12 @@ export const Sidebar = () => {
   const confirm = useConfirmDialog(ConfirmDialog);
 
   const router = useRouter();
-  const params = useParams() as { id?: string };
+  const pathname = usePathname();
 
   const chatStore = useChatStore();
   const configStore = useConfigStore();
 
-  const currentChatId = params.id;
+  const { currentChatId } = chatStore;
   const updateConfig = useConfigStore((state) => state.updateConfig);
 
   const ref = useRef<HTMLDivElement>(null);
@@ -125,7 +125,7 @@ export const Sidebar = () => {
       onConfirmAction: () => {
         chatStore.removeChat(id);
 
-        if (currentChatId === id) {
+        if (currentChatId === id && pathname !== '/') {
           router.push('/');
         }
       },
@@ -187,10 +187,16 @@ export const Sidebar = () => {
                         >
                           <MenuItem
                             chat={chat}
-                            selected={currentChatId === chat.id}
-                            onItemClick={() =>
-                              router.push(`/conversations/${chat.id}`)
+                            selected={
+                              currentChatId === chat.id && pathname === '/'
                             }
+                            onItemClick={() => {
+                              chatStore.setCurrentChatId(chat.id);
+
+                              if (pathname !== '/') {
+                                router.push('/');
+                              }
+                            }}
                             onRemoveClick={() => handleRemoveChat(chat.id)}
                           />
                         </div>
@@ -206,7 +212,13 @@ export const Sidebar = () => {
         <div className="flex gap-2 pt-5">
           <Button
             variant="outline"
-            onClick={() => router.push('/')}
+            onClick={() => {
+              chatStore.setCurrentChatId(undefined);
+
+              if (pathname !== '/') {
+                router.push('/');
+              }
+            }}
             className="flex-1"
           >
             <RiChat3Line size={18} />

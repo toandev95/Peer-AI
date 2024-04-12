@@ -11,6 +11,7 @@ import { useEffect } from 'react';
 
 import { useBreakpoint } from '@/hooks';
 import i18n from '@/i18n';
+import { env } from '@/lib/env.mjs';
 import { cn } from '@/lib/helpers';
 import { useConfigStore, useMaskStore, usePromptStore } from '@/stores';
 import type { IChatSetting, IMask, IPrompt } from '@/types';
@@ -18,6 +19,8 @@ import type { IChatSetting, IMask, IPrompt } from '@/types';
 import { Sidebar } from './Sidebar';
 
 export const Layout = ({ children }: { children: ReactNode }) => {
+  const { NEXT_PUBLIC_APP_URL } = env;
+
   const breakpoint = useBreakpoint();
 
   const configStore = useConfigStore();
@@ -51,7 +54,7 @@ export const Layout = ({ children }: { children: ReactNode }) => {
   const { data: models, refetch } = useQuery({
     queryKey: ['models'],
     queryFn: async () => {
-      const response = await fetch('/api/models', {
+      const response = await fetch(`${NEXT_PUBLIC_APP_URL || ''}/api/models`, {
         headers: {
           ...(!isNil(configStore.customApiKey)
             ? { 'X-Custom-Api-Key': configStore.customApiKey }
