@@ -456,7 +456,7 @@ export const ChatWindow = ({ id }: { id: IChat['id'] }) => {
 
     setMessages(newMessages);
 
-    setTimeout(reload, 0);
+    setTimeout(reload, 100);
   };
 
   const handleRemoveMessage = (message: IChatMessage) => {
