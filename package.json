@@ -1,7 +1,15 @@
 {
   "name": "peer-ai",
-  "description": "Peer AI",
-  "version": "2.0.0",
+  "description": "Peer AI is a free open-source alternative to ChatGPT.",
+  "version": "0.0.1",
+  "author": {
+    "name": "Toan Doan",
+    "email": "toandev.95@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/toandev95/Peer-AI.git"
+  },
   "license": "MIT",
   "scripts": {
     "dev": "next dev",
@@ -76,6 +84,7 @@
     "@commitlint/config-conventional": "^19.1.0",
     "@netlify/plugin-nextjs": "^5.0.0",
     "@tanstack/eslint-plugin-query": "^5.28.11",
+    "@tauri-apps/cli": "^1.5.11",
     "@types/html-to-text": "^9.0.4",
     "@types/lodash": "^4.17.0",
     "@types/node": "^20.12.6",
