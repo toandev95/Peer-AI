@@ -35,7 +35,7 @@ import { VscClearAll } from 'react-icons/vsc';
 import TextareaAutosize from 'react-textarea-autosize';
 import { useDebounce, useEffectOnce, useToggle } from 'react-use';
 
-import { useBreakpoint, useChatScrollAnchor, useEnterSubmit } from '@/hooks';
+import { useChatScrollAnchor, useEnterSubmit } from '@/hooks';
 import i18n from '@/i18n';
 import { env } from '@/lib/env.mjs';
 import { getModelNameByModelID, uuid } from '@/lib/helpers';
@@ -132,8 +132,6 @@ export const ChatWindow = ({ id }: { id: IChat['id'] }) => {
   const { t } = useTranslation();
 
   const confirm = useConfirmDialog(ConfirmDialog);
-
-  const breakpoint = useBreakpoint();
 
   const promptStore = usePromptStore();
   const configStore = useConfigStore();
@@ -494,21 +492,20 @@ export const ChatWindow = ({ id }: { id: IChat['id'] }) => {
               value={currentChat.title}
               onChange={(newTitle) => updateChatTitle(currentChat.id, newTitle)}
             />
-            {breakpoint !== 'tablet' && (
-              <AppBarIconButton
-                key={3}
-                IconComponent={
-                  configStore.isMaximized
-                    ? RiFullscreenExitLine
-                    : RiFullscreenLine
-                }
-                onClick={() => {
-                  configStore.updateConfig({
-                    isMaximized: !configStore.isMaximized,
-                  });
-                }}
-              />
-            )}
+            <AppBarIconButton
+              key={3}
+              IconComponent={
+                configStore.isMaximized
+                  ? RiFullscreenExitLine
+                  : RiFullscreenLine
+              }
+              className="hidden lg:flex"
+              onClick={() => {
+                configStore.updateConfig({
+                  isMaximized: !configStore.isMaximized,
+                });
+              }}
+            />
           </>
         }
       />

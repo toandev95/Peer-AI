@@ -3,6 +3,8 @@
 import type { ReactNode } from 'react';
 import type { IconType } from 'react-icons';
 
+import { cn } from '@/lib/helpers';
+
 import type { ButtonProps } from './UI/Button';
 import { Button } from './UI/Button';
 
@@ -27,12 +29,13 @@ export const AppBar = ({
 export const AppBarIconButton = ({
   IconComponent,
   onClick,
+  className,
   ...props
 }: ButtonProps & { IconComponent: IconType }) => (
   <Button
     variant="outline"
     size="icon"
-    className="shadow-none"
+    className={cn(className, 'shadow-none')}
     onClick={onClick}
     {...props}
   >

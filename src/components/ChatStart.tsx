@@ -27,9 +27,11 @@ export const ChatStart = () => {
 
   const chuckSize = useMemo(() => {
     switch (breakpoint) {
+      case 'desktop':
       case 'laptopL':
         return 12;
       case 'laptop':
+      case 'tablet':
         return 6;
       default:
         return 4;

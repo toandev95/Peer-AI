@@ -9,7 +9,6 @@ import type { ModelsPage } from 'openai/resources/models.mjs';
 import type { ReactNode } from 'react';
 import { useEffect } from 'react';
 
-import { useBreakpoint } from '@/hooks';
 import i18n from '@/i18n';
 import { env } from '@/lib/env.mjs';
 import { cn } from '@/lib/helpers';
@@ -20,8 +19,6 @@ import { Sidebar } from './Sidebar';
 
 export const Layout = ({ children }: { children: ReactNode }) => {
   const { NEXT_PUBLIC_APP_URL } = env;
-
-  const breakpoint = useBreakpoint();
 
   const configStore = useConfigStore();
 
@@ -103,13 +100,12 @@ export const Layout = ({ children }: { children: ReactNode }) => {
 
   return (
     <div className="min-h-screen">
-      <div className="flex h-screen items-center justify-center">
+      <div className="h-screen lg:flex lg:items-center lg:justify-center">
         <div
           className={cn(
-            'flex overflow-hidden transition-all',
-            configStore.isMaximized || breakpoint === 'tablet'
-              ? 'w-screen h-screen'
-              : 'h-[90vh] max-h-[850px] min-h-[370px] w-[90vw] min-w-[680px] max-w-[1400px] rounded-2xl border shadow-[50px_50px_100px_10px_rgba(0,0,0,.1)]',
+            'flex overflow-hidden transition-all w-full h-full',
+            !configStore.isMaximized &&
+              'lg:h-[90vh] lg:max-h-[850px] lg:min-h-[370px] lg:w-[90vw] lg:min-w-[680px] lg:max-w-[1400px] lg:rounded-2xl lg:border lg:shadow-[50px_50px_100px_10px_rgba(0,0,0,.1)]',
           )}
         >
           <Sidebar />

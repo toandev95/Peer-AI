@@ -152,7 +152,7 @@ export const Sidebar = () => {
       onMouseDownCapture={(e) => e.preventDefault()}
     >
       <div
-        className="flex min-w-[270px] max-w-[500px] shrink-0 grow flex-col p-5"
+        className="flex min-w-[270px] max-w-[500px] shrink-0 grow flex-col p-5 pr-4"
         style={{ width: configStore.sidebarWidth }}
       >
         <div className="py-5">
@@ -161,7 +161,7 @@ export const Sidebar = () => {
           </Link>
           <div className="opacity-70">{t('sidebar.slogan')}</div>
         </div>
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto scrollbar scrollbar-thumb-accent-foreground/30 scrollbar-thumb-rounded-full scrollbar-w-[3px]">
           <DragDropContext onDragEnd={handleDragEnd}>
             <Droppable droppableId="droppable">
               {(droppableProvided: DroppableProvided) => (
@@ -181,7 +181,7 @@ export const Sidebar = () => {
                           {...draggableProvided.draggableProps}
                           {...draggableProvided.dragHandleProps}
                           className={cn(
-                            'my-1.5 transition-opacity',
+                            'my-1 transition-opacity',
                             snapshot.isDragging && 'opacity-80',
                           )}
                         >
