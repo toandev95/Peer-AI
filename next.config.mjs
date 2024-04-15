@@ -28,11 +28,15 @@ const nextConfig = {
           },
           {
             key: 'Access-Control-Allow-Methods',
-            value: 'GET, OPTIONS, PATCH, DELETE, POST, PUT',
+            value: '*',
           },
           {
             key: 'Access-Control-Allow-Headers',
-            value: `X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, Authorization, X-Api-Version, X-Custom-Api-Key, X-Custom-Base-Url`,
+            value: '*',
+          },
+          {
+            key: 'Access-Control-Max-Age',
+            value: '86400',
           },
         ],
       },
