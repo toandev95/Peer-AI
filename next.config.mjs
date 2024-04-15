@@ -1,7 +1,7 @@
 import { env } from './src/lib/env.mjs';
 
 /** @type {import('next').NextConfig} */
-const nextConfig = {
+const config = {
   output: env.NEXT_PUBLIC_APP_URL ? 'export' : 'standalone',
   reactStrictMode: true,
   eslint: { dirs: ['.'] },
@@ -13,7 +13,10 @@ const nextConfig = {
       },
     ],
   },
-  headers: () => {
+};
+
+if (!env.NEXT_PUBLIC_APP_URL) {
+  config.headers = () => {
     return [
       {
         source: '/api/:path*',
@@ -24,11 +27,11 @@ const nextConfig = {
           },
           {
             key: 'Access-Control-Allow-Origin',
-            value: '*',
+            value: 'http://localhost:3000',
           },
           {
             key: 'Access-Control-Allow-Methods',
-            value: 'GET,OPTIONS,PATCH,DELETE,POST,PUT',
+            value: '*',
           },
           {
             key: 'Access-Control-Allow-Headers',
@@ -41,7 +44,7 @@ const nextConfig = {
         ],
       },
     ];
-  },
-};
+  };
+}
 
-export default nextConfig;
+export default config;

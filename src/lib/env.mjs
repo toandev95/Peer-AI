@@ -5,6 +5,7 @@ export const env = createEnv({
   server: {
     OPENAI_API_KEY: z.string().min(1),
     OPENAI_BASE_URL: z.string().url(),
+    BROWSERLESS_BASE_URL: z.string().url().optional(),
   },
   client: {
     NEXT_PUBLIC_APP_URL: z.string().url().optional(),
@@ -12,6 +13,7 @@ export const env = createEnv({
   runtimeEnv: {
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     OPENAI_BASE_URL: process.env.OPENAI_BASE_URL,
+    BROWSERLESS_BASE_URL: process.env.BROWSERLESS_BASE_URL,
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
   },
 });

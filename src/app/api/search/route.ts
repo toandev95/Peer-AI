@@ -59,8 +59,15 @@ export async function POST(req: NextRequest): Promise<Response> {
 
   const results = [];
 
+  if (isNil(env.BROWSERLESS_BASE_URL)) {
+    return NextResponse.json(
+      { error: 'Something went wrong!' },
+      { status: 500 },
+    );
+  }
+
   try {
-    const response = await fetch('https://browserless.idex.vn/function', {
+    const response = await fetch(`${env.BROWSERLESS_BASE_URL}/function`, {
       method: 'POST',
       body: JSON.stringify({
         // eslint-disable-next-line no-template-curly-in-string
@@ -107,7 +114,7 @@ export async function POST(req: NextRequest): Promise<Response> {
     {
       temperature: 0.7,
       maxTokens: 1024,
-      // modelName: 'gpt-4',
+      modelName: 'gpt-4',
       streaming: true,
       openAIApiKey: customApiKey || env.OPENAI_API_KEY,
     },
