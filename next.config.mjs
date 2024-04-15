@@ -6,6 +6,7 @@ const config = {
   reactStrictMode: true,
   eslint: { dirs: ['.'] },
   images: {
+    unoptimized: !!env.NEXT_PUBLIC_APP_URL,
     remotePatterns: [
       {
         protocol: 'https',
