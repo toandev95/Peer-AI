@@ -7,6 +7,7 @@ import _, {
   cloneDeep,
   filter,
   find,
+  has,
   includes,
   isEmpty,
   isEqual,
@@ -152,25 +153,23 @@ export const ChatWindow = ({ id }: { id: IChat['id'] }) => {
 
   const { mutateAsync: requestChat } = useMutation({
     mutationFn: async (messages: Pick<IChatMessage, 'role' | 'content'>[]) => {
-      const response = await fetch(
-        `${NEXT_PUBLIC_APP_URL || ''}/api/chat/completions`,
-        {
-          method: 'POST',
-          body: JSON.stringify({
-            messages,
-            stream: false,
-            language: i18n.language,
-          }),
-          headers: {
-            ...(!isNil(configStore.customApiKey)
-              ? { 'X-Custom-Api-Key': configStore.customApiKey }
-              : {}),
-            ...(!isNil(configStore.customBaseUrl)
-              ? { 'X-Custom-Base-Url': configStore.customBaseUrl }
-              : {}),
-          },
+      const response = await fetch(`${NEXT_PUBLIC_APP_URL || ''}/api/chat`, {
+        method: 'POST',
+        body: JSON.stringify({
+          messages,
+          stream: false,
+          language: i18n.language,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+          ...(!isNil(configStore.customApiKey)
+            ? { 'X-Custom-Api-Key': configStore.customApiKey }
+            : {}),
+          ...(!isNil(configStore.customBaseUrl)
+            ? { 'X-Custom-Base-Url': configStore.customBaseUrl }
+            : {}),
         },
-      );
+      });
 
       if (!response.ok) {
         throw new Error('Something went wrong!');
@@ -284,7 +283,7 @@ export const ChatWindow = ({ id }: { id: IChat['id'] }) => {
     reload,
     error,
   } = useChat({
-    api: `${NEXT_PUBLIC_APP_URL || ''}/api/chat/completions`,
+    api: `${NEXT_PUBLIC_APP_URL || ''}/api/chat`,
     id: currentChat.id,
     initialInput: currentChat.input,
     initialMessages: currentChat.messages,
@@ -492,20 +491,22 @@ export const ChatWindow = ({ id }: { id: IChat['id'] }) => {
               value={currentChat.title}
               onChange={(newTitle) => updateChatTitle(currentChat.id, newTitle)}
             />
-            <AppBarIconButton
-              key={3}
-              IconComponent={
-                configStore.isMaximized
-                  ? RiFullscreenExitLine
-                  : RiFullscreenLine
-              }
-              className="hidden lg:flex"
-              onClick={() => {
-                configStore.updateConfig({
-                  isMaximized: !configStore.isMaximized,
-                });
-              }}
-            />
+            {!has(window, '__TAURI__') && (
+              <AppBarIconButton
+                key={3}
+                IconComponent={
+                  configStore.isMaximized
+                    ? RiFullscreenExitLine
+                    : RiFullscreenLine
+                }
+                className="hidden lg:flex"
+                onClick={() => {
+                  configStore.updateConfig({
+                    isMaximized: !configStore.isMaximized,
+                  });
+                }}
+              />
+            )}
           </>
         }
       />

@@ -119,6 +119,7 @@ const Search = () => {
           language: i18n.language,
         }),
         headers: {
+          'Content-Type': 'application/json',
           ...(!isNil(configStore.customApiKey)
             ? { 'X-Custom-Api-Key': configStore.customApiKey }
             : {}),

@@ -3,11 +3,11 @@
 import 'moment/locale/vi';
 
 import { useQuery } from '@tanstack/react-query';
-import { isArray, isNil, map } from 'lodash';
+import { has, isArray, isNil, map } from 'lodash';
 import moment from 'moment';
 import type { ModelsPage } from 'openai/resources/models.mjs';
 import type { ReactNode } from 'react';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 
 import i18n from '@/i18n';
 import { env } from '@/lib/env.mjs';
@@ -53,6 +53,7 @@ export const Layout = ({ children }: { children: ReactNode }) => {
     queryFn: async () => {
       const response = await fetch(`${NEXT_PUBLIC_APP_URL || ''}/api/models`, {
         headers: {
+          'Content-Type': 'application/json',
           ...(!isNil(configStore.customApiKey)
             ? { 'X-Custom-Api-Key': configStore.customApiKey }
             : {}),
@@ -64,6 +65,11 @@ export const Layout = ({ children }: { children: ReactNode }) => {
       return response.json() as Promise<ModelsPage>;
     },
   });
+
+  const isMaximized = useMemo(
+    () => configStore.isMaximized || has(window, '__TAURI__'),
+    [configStore.isMaximized],
+  );
 
   useEffect(() => {
     refetch();
@@ -104,7 +110,7 @@ export const Layout = ({ children }: { children: ReactNode }) => {
         <div
           className={cn(
             'flex overflow-hidden transition-all w-full h-full',
-            !configStore.isMaximized &&
+            !isMaximized &&
               'lg:h-[90vh] lg:max-h-[850px] lg:min-h-[370px] lg:w-[90vw] lg:min-w-[680px] lg:max-w-[1400px] lg:rounded-2xl lg:border lg:shadow-[50px_50px_100px_10px_rgba(0,0,0,.1)]',
           )}
         >
