@@ -35,7 +35,7 @@ if (!env.NEXT_PUBLIC_APP_URL) {
           },
           {
             key: 'Access-Control-Allow-Headers',
-            value: `Accept, Content-Type, X-Requested-With, X-Custom-Api-Key, X-Custom-Base-Url`,
+            value: '*',
           },
           {
             key: 'Access-Control-Max-Age',

@@ -161,7 +161,7 @@ export const ChatWindow = ({ id }: { id: IChat['id'] }) => {
           language: i18n.language,
         }),
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'text/plain',
           ...(!isNil(configStore.customApiKey)
             ? { 'X-Custom-Api-Key': configStore.customApiKey }
             : {}),
@@ -318,6 +318,7 @@ export const ChatWindow = ({ id }: { id: IChat['id'] }) => {
       language: i18n.language,
     },
     headers: {
+      'Content-Type': 'text/plain',
       ...(!isNil(configStore.customApiKey)
         ? { 'X-Custom-Api-Key': configStore.customApiKey }
         : {}),
