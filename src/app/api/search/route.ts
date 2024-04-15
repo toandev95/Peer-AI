@@ -45,10 +45,6 @@ User language:
 Related questions would be:`;
 
 export async function POST(req: NextRequest): Promise<Response> {
-  if (req.method === 'OPTIONS') {
-    return NextResponse.json({}, { status: 200 });
-  }
-
   const customApiKey = req.headers.get('x-custom-api-key');
   const customBaseUrl = req.headers.get('x-custom-base-url');
 
