@@ -269,7 +269,7 @@ devDependencies:
     specifier: ^3.4.3
     version: 3.4.3
   typescript:
-    specifier: ^5.4.4
+    specifier: ^5.3.0
     version: 5.4.4
 
 packages:

@@ -3,6 +3,7 @@
 import 'moment/locale/vi';
 
 import { useQuery } from '@tanstack/react-query';
+import { Analytics } from '@vercel/analytics/react';
 import { has, isArray, isNil, map } from 'lodash';
 import moment from 'moment';
 import type { ModelsPage } from 'openai/resources/models.mjs';
@@ -105,21 +106,24 @@ export const Layout = ({ children }: { children: ReactNode }) => {
   }, [prompts, updateBuiltInPrompts]);
 
   return (
-    <div className="min-h-screen">
-      <div className="h-screen lg:flex lg:items-center lg:justify-center">
-        <div
-          className={cn(
-            'flex overflow-hidden transition-all w-full h-full',
-            !isMaximized &&
-              'lg:h-[90vh] lg:max-h-[850px] lg:min-h-[370px] lg:w-[90vw] lg:min-w-[680px] lg:max-w-[1400px] lg:rounded-2xl lg:border lg:shadow-[50px_50px_100px_10px_rgba(0,0,0,.1)]',
-          )}
-        >
-          <Sidebar />
-          <div className="flex flex-1 flex-col overflow-y-auto bg-foreground/[.03] scrollbar scrollbar-thumb-accent-foreground/30 scrollbar-thumb-rounded-full scrollbar-w-[3px]">
-            {children}
+    <>
+      <div className="min-h-screen">
+        <div className="h-screen lg:flex lg:items-center lg:justify-center">
+          <div
+            className={cn(
+              'flex overflow-hidden transition-all w-full h-full',
+              !isMaximized &&
+                'lg:h-[90vh] lg:max-h-[850px] lg:min-h-[370px] lg:w-[90vw] lg:min-w-[680px] lg:max-w-[1400px] lg:rounded-2xl lg:border lg:shadow-[50px_50px_100px_10px_rgba(0,0,0,.1)]',
+            )}
+          >
+            <Sidebar />
+            <div className="flex flex-1 flex-col overflow-y-auto bg-foreground/[.03] scrollbar scrollbar-thumb-accent-foreground/30 scrollbar-thumb-rounded-full scrollbar-w-[3px]">
+              {children}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+      {!has(window, '__TAURI__') && <Analytics />}
+    </>
   );
 };
