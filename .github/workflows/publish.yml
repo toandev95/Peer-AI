@@ -45,6 +45,10 @@ jobs:
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_BASE_URL: ${{ secrets.OPENAI_BASE_URL }}
+          BROWSERLESS_BASE_URL: ${{ secrets.BROWSERLESS_BASE_URL }}
+          NEXT_PUBLIC_APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
         with:
           tagName: v__VERSION__ # The action automatically replaces \_\_VERSION\_\_ with the app version.
           releaseName: "Peer AI v__VERSION__"
