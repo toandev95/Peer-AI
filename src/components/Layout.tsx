@@ -68,7 +68,7 @@ export const Layout = ({ children }: { children: ReactNode }) => {
   });
 
   const isMaximized = useMemo(
-    () => configStore.isMaximized || has(window, '__TAURI__'),
+    () => configStore.isMaximized || has(window, '__TAURI_INTERNALS__'),
     [configStore.isMaximized],
   );
 
@@ -123,7 +123,7 @@ export const Layout = ({ children }: { children: ReactNode }) => {
           </div>
         </div>
       </div>
-      {!has(window, '__TAURI__') && <Analytics />}
+      {!has(window, '__TAURI_INTERNALS__') && <Analytics />}
     </>
   );
 };
