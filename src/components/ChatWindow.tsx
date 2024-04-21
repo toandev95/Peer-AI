@@ -492,7 +492,7 @@ export const ChatWindow = ({ id }: { id: IChat['id'] }) => {
               value={currentChat.title}
               onChange={(newTitle) => updateChatTitle(currentChat.id, newTitle)}
             />
-            {!has(window, '__TAURI__') && (
+            {!has(window, '__TAURI_INTERNALS__') && (
               <AppBarIconButton
                 key={3}
                 IconComponent={

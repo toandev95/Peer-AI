@@ -7,7 +7,7 @@ import type {
   DropResult,
 } from '@hello-pangea/dnd';
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd';
-import _, { includes, isNil, map } from 'lodash';
+import _, { includes, isNil } from 'lodash';
 import moment from 'moment';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -27,6 +27,7 @@ import type { IChat } from '@/types';
 import { useConfirmDialog } from './Providers/ConfirmDialogProvider';
 import { Button } from './UI/Button';
 import { ConfirmDialog } from './UI/ConfirmDialog';
+import { Input } from './UI/Input';
 
 const MenuItem = ({
   chat,
@@ -93,6 +94,7 @@ export const Sidebar = () => {
   const ref = useRef<HTMLDivElement>(null);
 
   const [isResizing, setIsResizing] = useState<boolean>(false);
+  const [search, setSearch] = useState<string>('');
 
   const handleResize = useCallback(
     (ev: MouseEvent) => {
@@ -149,7 +151,7 @@ export const Sidebar = () => {
     <div
       ref={ref}
       className="flex border-r bg-primary/[.08] shadow-[inset_-2px_0_2px_0_rgba(0,0,0,.04)] dark:bg-primary/[.02] dark:shadow-none"
-      onMouseDownCapture={(e) => e.preventDefault()}
+      // onMouseDownCapture={(e) => e.preventDefault()}
     >
       <div
         className="flex min-w-[270px] max-w-[500px] shrink-0 grow flex-col p-5 pr-4"
@@ -161,6 +163,15 @@ export const Sidebar = () => {
           </Link>
           <div className="opacity-70">{t('sidebar.slogan')}</div>
         </div>
+        <div className="mb-3 flex gap-2">
+          <Input
+            type="search"
+            placeholder="Search ..."
+            className="flex-1"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
         <div className="flex-1 overflow-y-auto scrollbar scrollbar-thumb-accent-foreground/30 scrollbar-thumb-rounded-full scrollbar-w-[3px]">
           <DragDropContext onDragEnd={handleDragEnd}>
             <Droppable droppableId="droppable">
@@ -170,39 +181,44 @@ export const Sidebar = () => {
                   {...droppableProvided.droppableProps}
                   className="flex flex-col"
                 >
-                  {map(chatStore.chats, (chat, i) => (
-                    <Draggable key={chat.id} index={i} draggableId={chat.id}>
-                      {(
-                        draggableProvided: DraggableProvided,
-                        snapshot: DraggableStateSnapshot,
-                      ) => (
-                        <div
-                          ref={draggableProvided.innerRef}
-                          {...draggableProvided.draggableProps}
-                          {...draggableProvided.dragHandleProps}
-                          className={cn(
-                            'my-1 transition-opacity',
-                            snapshot.isDragging && 'opacity-80',
-                          )}
-                        >
-                          <MenuItem
-                            chat={chat}
-                            selected={
-                              currentChatId === chat.id && pathname === '/'
-                            }
-                            onItemClick={() => {
-                              chatStore.setCurrentChatId(chat.id);
-
-                              if (pathname !== '/') {
-                                router.push('/');
+                  {_(chatStore.chats)
+                    .filter((chat) =>
+                      chat.title.toLowerCase().includes(search.toLowerCase()),
+                    )
+                    .map((chat, i) => (
+                      <Draggable key={chat.id} index={i} draggableId={chat.id}>
+                        {(
+                          draggableProvided: DraggableProvided,
+                          snapshot: DraggableStateSnapshot,
+                        ) => (
+                          <div
+                            ref={draggableProvided.innerRef}
+                            {...draggableProvided.draggableProps}
+                            {...draggableProvided.dragHandleProps}
+                            className={cn(
+                              'my-1 transition-opacity first:mt-0 last:mb-0',
+                              snapshot.isDragging && 'opacity-80',
+                            )}
+                          >
+                            <MenuItem
+                              chat={chat}
+                              selected={
+                                currentChatId === chat.id && pathname === '/'
                               }
-                            }}
-                            onRemoveClick={() => handleRemoveChat(chat.id)}
-                          />
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
+                              onItemClick={() => {
+                                chatStore.setCurrentChatId(chat.id);
+
+                                if (pathname !== '/') {
+                                  router.push('/');
+                                }
+                              }}
+                              onRemoveClick={() => handleRemoveChat(chat.id)}
+                            />
+                          </div>
+                        )}
+                      </Draggable>
+                    ))
+                    .value()}
                   {droppableProvided.placeholder}
                 </div>
               )}

@@ -4,7 +4,7 @@ import { env } from './src/lib/env.mjs';
 const config = {
   output: env.NEXT_PUBLIC_APP_URL ? 'export' : 'standalone',
   reactStrictMode: true,
-  eslint: { dirs: ['.'] },
+  eslint: { dirs: ['src'] },
   images: {
     unoptimized: !!env.NEXT_PUBLIC_APP_URL,
     remotePatterns: [
