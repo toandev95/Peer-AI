@@ -266,6 +266,7 @@ export const ChatWindow = ({ id }: { id: IChat['id'] }) => {
         ..._(filteredMessages)
           .filter((message) => message.role !== 'system')
           .map((message) => message.id)
+          .slice(0, -2)
           .value(),
       ],
     });
