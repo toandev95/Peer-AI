@@ -17,5 +17,5 @@ export const ChatUI = () => {
     return <ChatStart />;
   }
 
-  return <ChatWindow id={currentChat.id} />;
+  return <ChatWindow key={currentChat.id} id={currentChat.id} />;
 };
