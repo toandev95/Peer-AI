@@ -44,7 +44,7 @@ import {
   SelectValue,
 } from './UI/Select';
 
-type AddNewMaskFormData = Pick<IMask, 'title' | 'emoji'> & {
+type MaskFormData = Pick<IMask, 'title' | 'emoji'> & {
   messages: Pick<IChatMessage, 'id' | 'role' | 'content' | 'createdAt'>[];
 };
 
@@ -53,7 +53,7 @@ const AddNewMaskButton = () => {
 
   const [open, setOpen] = useState<boolean>(false);
 
-  const [formData, setFormData] = useState<AddNewMaskFormData>({
+  const [formData, setFormData] = useState<MaskFormData>({
     title: '',
     emoji: '👌',
     messages: [],
@@ -214,7 +214,7 @@ const EditMaskButton = ({ mask }: { mask: IMask }) => {
 
   const [open, setOpen] = useState<boolean>(false);
 
-  const [formData, setFormData] = useState<AddNewMaskFormData>({
+  const [formData, setFormData] = useState<MaskFormData>({
     title: mask.title,
     emoji: mask.emoji,
     messages: mask.messages,

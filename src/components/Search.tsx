@@ -1,7 +1,9 @@
 'use client';
 
+import TeX from '@matejmazur/react-katex';
 import { useMutation } from '@tanstack/react-query';
-import _, { isEmpty, isNil, isNumber, map, sample } from 'lodash';
+import _, { isEmpty, isNil, isNumber, map, parseInt, sample } from 'lodash';
+import Markdown from 'markdown-to-jsx';
 import Image from 'next/image';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import type { FormEvent, ReactNode } from 'react';
@@ -15,9 +17,6 @@ import {
   RiSearch2Line,
 } from 'react-icons/ri';
 import { useEffectOnce } from 'react-use';
-import remarkBreaks from 'remark-breaks';
-import remarkGfm from 'remark-gfm';
-import remarkMath from 'remark-math';
 
 import i18n from '@/i18n';
 import { env } from '@/lib/env.mjs';
@@ -25,9 +24,8 @@ import { cn } from '@/lib/helpers';
 import { useConfigStore } from '@/stores';
 
 import { AppBar, AppBarIconButton } from './AppBar';
-import { MemoizedReactMarkdown } from './Markdown';
+import { SyntaxHighlightedCode } from './Markdown';
 import { Button } from './UI/Button';
-import { CodeBlock } from './UI/CodeBlock';
 import { Input } from './UI/Input';
 import { Popover, PopoverContent, PopoverTrigger } from './UI/Popover';
 
@@ -40,48 +38,66 @@ type SearchResult = {
 
 const CitePopover = ({
   children,
-  source,
+  href,
+  sources,
+  ...props
 }: {
   children: ReactNode;
-  source?: SearchResult;
+  sources: SearchResult[];
+  href?: string;
 }) => {
   const [open, setOpen] = useState<boolean>(false);
 
-  return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <span className="relative z-10 inline px-2">
-          <a className="absolute -left-0 -top-1.5 cursor-pointer rounded-full bg-foreground/[.2] px-[5px] py-0 text-[10px] no-underline">
-            {children}
-          </a>
-        </span>
-      </PopoverTrigger>
-      {!isNil(source) && (
-        <PopoverContent side="bottom" align="start" className="z-20">
-          <div className="mb-2 truncate text-sm font-semibold">
-            {source.title}
-          </div>
-          <div className="mb-2 text-xs">{source.description}</div>
-          <div className="flex items-center justify-between gap-2">
-            <a
-              href={source.url}
-              title={source.title}
-              target="_blank"
-              className="truncate text-xs text-primary"
-            >
-              {source.url}
+  if (
+    String(children) === 'citation' &&
+    !isNil(href) &&
+    isNumber(parseInt(href, 10))
+  ) {
+    const index = parseInt(href, 10);
+    const source = sources[index - 1];
+
+    return (
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <span className="relative z-10 inline px-2">
+            <a className="absolute -left-0 -top-1.5 cursor-pointer rounded-full bg-foreground/[.2] px-[5px] py-0 text-[10px] no-underline">
+              {href}
             </a>
-            <Image
-              src={source.iconUrl}
-              alt={new URL(source.url).host}
-              width={16}
-              height={16}
-              className="size-[12px]"
-            />
-          </div>
-        </PopoverContent>
-      )}
-    </Popover>
+          </span>
+        </PopoverTrigger>
+        {!isNil(source) && (
+          <PopoverContent side="bottom" align="start" className="z-20">
+            <div className="mb-2 truncate text-sm font-semibold">
+              {source.title}
+            </div>
+            <div className="mb-2 text-xs">{source.description}</div>
+            <div className="flex items-center justify-between gap-2">
+              <a
+                href={source.url}
+                title={source.title}
+                target="_blank"
+                className="truncate text-xs text-primary"
+              >
+                {source.url}
+              </a>
+              <Image
+                src={source.iconUrl}
+                alt={new URL(source.url).host}
+                width={16}
+                height={16}
+                className="size-[12px]"
+              />
+            </div>
+          </PopoverContent>
+        )}
+      </Popover>
+    );
+  }
+
+  return (
+    <a {...props} href={href} target="_blank" rel="noopener noreferrer">
+      {children}
+    </a>
   );
 };
 
@@ -264,62 +280,41 @@ const Search = () => {
                 <RiBook2Line size={16} />
                 <span className="underline">Answer:</span>
               </div>
-              <MemoizedReactMarkdown
-                className="prose prose-sm max-w-full select-text break-words dark:prose-invert prose-p:leading-relaxed prose-img:my-0"
-                remarkPlugins={[remarkGfm, remarkMath, remarkBreaks]}
-                components={{
-                  p: (props) => {
-                    return (
-                      <p
-                        {...props}
-                        className="mb-2 text-foreground last:mb-0"
-                      />
-                    );
-                  },
-                  a: ({ children, href, ...props }) => {
-                    if (
-                      String(children) === 'citation' &&
-                      !isNil(href) &&
-                      isNumber(parseInt(href, 10))
-                    ) {
-                      const index = parseInt(href, 10);
-                      const source = data.sources[index - 1];
+              <div className="prose prose-sm select-text break-words dark:prose-invert prose-p:leading-relaxed prose-img:my-0">
+                <Markdown
+                  options={{
+                    overrides: {
+                      p: {
+                        component: 'p',
+                        props: {
+                          className: 'text-foreground first:mt-0 last:mb-0',
+                        },
+                      },
+                      a: {
+                        component: CitePopover,
+                        props: { sources: data.sources },
+                      },
+                      code: SyntaxHighlightedCode,
+                    },
+                    renderRule(next, node, _renderChildren, state) {
+                      if (node.type === '3' && node.lang === 'latex') {
+                        return (
+                          <TeX as="div" key={state.key}>
+                            {String.raw`${node.text}`}
+                          </TeX>
+                        );
+                      }
 
-                      return <CitePopover source={source}>{href}</CitePopover>;
-                    }
-
-                    return (
-                      <a
-                        {...props}
-                        href={href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {children}
-                      </a>
-                    );
-                  },
-                  code: ({ className, children, ...props }) => {
-                    const match = /language-(\w+)/.exec(className || '');
-
-                    return !isNil(match) ? (
-                      <CodeBlock
-                        language={match[1]!}
-                        value={String(children).replace(/\n$/, '')}
-                      />
-                    ) : (
-                      <code {...props} className={className}>
-                        {children}
-                      </code>
-                    );
-                  },
-                }}
-              >
-                {data.answer.replace(
-                  /\[citation:(.*?)\]/g,
-                  (_m, x) => `[citation](${x})`,
-                )}
-              </MemoizedReactMarkdown>
+                      return next();
+                    },
+                  }}
+                >
+                  {data.answer.replace(
+                    /\[citation:(.*?)\]/g,
+                    (_m, x) => `[citation](${x})`,
+                  )}
+                </Markdown>
+              </div>
             </div>
             {!isEmpty(data.sources) && (
               <div>

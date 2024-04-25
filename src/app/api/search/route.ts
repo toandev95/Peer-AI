@@ -115,7 +115,7 @@ export async function POST(req: NextRequest): Promise<Response> {
       temperature: 0.7,
       maxTokens: 1024,
       modelName: 'gpt-4',
-      streaming: true,
+      streaming: false,
       openAIApiKey: customApiKey || env.OPENAI_API_KEY,
     },
     { baseURL: customBaseUrl || env.OPENAI_BASE_URL },

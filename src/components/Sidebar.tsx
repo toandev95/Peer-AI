@@ -166,7 +166,7 @@ export const Sidebar = () => {
         <div className="mb-3 flex gap-2">
           <Input
             type="search"
-            placeholder="Search ..."
+            placeholder={t('sidebar.search.placeholder')}
             className="flex-1"
             value={search}
             onChange={(e) => setSearch(e.target.value)}

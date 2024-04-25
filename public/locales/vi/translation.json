@@ -9,6 +9,9 @@
   "sidebar": {
     "slogan": "Cá nhân hóa AI cho riêng bạn.",
     "totalMessages": "{{count}} tin nhắn",
+    "search": {
+      "placeholder": "Tìm kiếm ..."
+    },
     "newChat": "Chat Mới",
     "confirm": {
       "removeChat": "Bạn có chắc chắn muốn xoá cuộc trò chuyện này?"

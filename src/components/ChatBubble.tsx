@@ -24,7 +24,7 @@ import i18n from '@/i18n';
 import { cn } from '@/lib/helpers';
 import type { IChatMessage } from '@/types';
 
-import { CustomizedReactMarkdown } from './Markdown';
+import { CustomizedMarkdown } from './Markdown';
 import { Button } from './UI/Button';
 import {
   Dialog,
@@ -201,9 +201,9 @@ export const ChatBubble = ({
             <BeatLoader color="#3c83f6" size={6} />
           )}
           {!isEmpty(message.content) && (
-            <CustomizedReactMarkdown className="prose prose-sm select-text break-words dark:prose-invert prose-p:leading-relaxed prose-img:my-0">
-              {message.content}
-            </CustomizedReactMarkdown>
+            <div className="prose prose-sm select-text break-words dark:prose-invert prose-p:leading-relaxed prose-img:my-0">
+              <CustomizedMarkdown>{message.content}</CustomizedMarkdown>
+            </div>
           )}
         </div>
       </div>

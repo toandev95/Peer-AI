@@ -47,3 +47,10 @@ export type IChat = {
   isTitleGenerated?: boolean;
   contextSummary?: string;
 };
+
+export type ISearchResult = {
+  url: string;
+  iconUrl: string;
+  title: string;
+  description: string;
+};

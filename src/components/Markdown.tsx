@@ -1,56 +1,64 @@
+import TeX from '@matejmazur/react-katex';
 import { isNil } from 'lodash';
-import type { FC } from 'react';
-import React, { memo } from 'react';
-import type { Options } from 'react-markdown';
-import ReactMarkdown from 'react-markdown';
-import remarkBreaks from 'remark-breaks';
-import remarkGfm from 'remark-gfm';
-import remarkMath from 'remark-math';
+import Markdown from 'markdown-to-jsx';
+import type { ReactNode } from 'react';
+import React from 'react';
 
 import { CodeBlock } from './UI/CodeBlock';
 
-export const MemoizedReactMarkdown: FC<Options> = memo(
-  ReactMarkdown,
-  (prevProps, nextProps) =>
-    prevProps.children === nextProps.children &&
-    prevProps.className === nextProps.className,
-);
+export const SyntaxHighlightedCode = ({
+  className,
+  children,
+}: {
+  className: string;
+  children: ReactNode;
+}) => {
+  const match = /lang-(\w+)/.exec(className);
 
-export const CustomizedReactMarkdown = (props: Readonly<Readonly<Options>>) => {
+  if (isNil(match)) {
+    return <code className={className}>{children}</code>;
+  }
+
   return (
-    <MemoizedReactMarkdown
-      remarkPlugins={[remarkGfm, remarkMath, remarkBreaks]}
-      components={{
-        p: ({ children }) => {
-          return (
-            <p className="mb-2 last:mb-0" dir="auto">
-              {children}
-            </p>
-          );
-        },
-        a: ({ children, ...props }) => {
-          return (
-            <a {...props} target="_blank" rel="noopener noreferrer">
-              {children}
-            </a>
-          );
-        },
-        code: ({ className, children, ...props }) => {
-          const match = /language-(\w+)/.exec(className || '');
+    <CodeBlock
+      language={match[1]! || ''}
+      value={String(children).replace(/\n$/, '')}
+    />
+  );
+};
 
-          return !isNil(match) ? (
-            <CodeBlock
-              language={match[1]! || ''}
-              value={String(children).replace(/\n$/, '')}
-            />
-          ) : (
-            <code {...props} className={className}>
-              {children}
-            </code>
-          );
+export const CustomizedMarkdown = ({ children }: { children: ReactNode }) => {
+  return (
+    <Markdown
+      options={{
+        overrides: {
+          p: {
+            component: 'p',
+            props: {
+              className: 'text-foreground mb-2 first:mt-0 last:mb-0',
+            },
+          },
+          a: {
+            component: 'a',
+            props: {
+              target: '_blank',
+              rel: 'noopener noreferrer',
+            },
+          },
+          code: SyntaxHighlightedCode,
+        },
+        renderRule(next, node, _renderChildren, state) {
+          if (node.type === '3' && node.lang === 'latex') {
+            return (
+              <TeX as="div" key={state.key}>{String.raw`${node.text}`}</TeX>
+            );
+          }
+
+          return next();
         },
       }}
-      {...props}
-    />
+    >
+      {children as string}
+    </Markdown>
   );
 };

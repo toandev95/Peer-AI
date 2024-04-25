@@ -9,6 +9,9 @@
   "sidebar": {
     "slogan": "Customize your own AI assistant.",
     "totalMessages": "{{count}} messages",
+    "search": {
+      "placeholder": "Search..."
+    },
     "newChat": "New Chat",
     "confirm": {
       "removeChat": "Are you sure you want to remove this chat?"
